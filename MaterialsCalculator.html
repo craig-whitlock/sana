@@ -70,6 +70,12 @@
       <option value="double">Double Skin</option>
     </select>
 
+    <label for="brickHeight">Brick Height (including mortar):</label>
+    <select id="brickHeight" required>
+      <option value="0.075">65mm (Standard)</option>
+      <option value="0.083">73mm (Imperial)</option>
+    </select>
+
     <button onclick="calculateMaterials()">Calculate</button>
 
     <div id="result"></div>
@@ -80,6 +86,7 @@
       const length = parseFloat(document.getElementById('length').value);
       const height = parseFloat(document.getElementById('height').value);
       const wallType = document.getElementById('wallType').value;
+      const selectedBrickHeight = parseFloat(document.getElementById('brickHeight').value);
       const resultBox = document.getElementById('result');
 
       if (isNaN(length) || isNaN(height) || length <= 0 || height <= 0) {
@@ -90,16 +97,16 @@
       const wallArea = length * height;
       const skinMultiplier = wallType === 'double' ? 2 : 1;
 
-      const brickLength = 0.225;
-      const brickHeight = 0.075;
-      const brickArea = brickLength * brickHeight;
+      const brickLength = 0.225; // Standard brick length with mortar
+      const brickArea = brickLength * selectedBrickHeight;
 
       const bricksNeeded = Math.ceil((wallArea / brickArea) * 1.05 * skinMultiplier);
       const cementBags = Math.ceil(wallArea * 0.3 * skinMultiplier);
       const sandBags = Math.ceil(wallArea * 1.2 * skinMultiplier);
 
       resultBox.innerHTML = `
-        <strong>Estimated Materials Required (${wallType === 'double' ? 'Double Skin' : 'Single Skin'}):</strong><br>
+        <strong>Estimated Materials Required (${wallType === 'double' ? 'Double Skin' : 'Single Skin'} Wall):</strong><br>
+        Brick Height: <strong>${selectedBrickHeight * 1000} mm</strong><br>
         Bricks: <strong>${bricksNeeded}</strong><br>
         25kg Cement Bags: <strong>${cementBags}</strong><br>
         25kg Sand Bags: <strong>${sandBags}</strong>
