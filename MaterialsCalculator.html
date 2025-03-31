@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Wall Material Calculator</title>
+  <title>Materials Calculator</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -56,24 +56,33 @@
 </head>
 <body>
   <div class="calculator-container">
-    <h2>Wall Material Calculator</h2>
+    <h2>Wall / Surface Material Calculator</h2>
 
-    <label for="length">Wall Length (meters):</label>
-    <input type="number" id="length" step="0.01" required>
-
-    <label for="height">Wall Height (meters):</label>
-    <input type="number" id="height" step="0.01" required>
-
-    <label for="wallType">Wall Type:</label>
-    <select id="wallType" required>
-      <option value="single">Single Skin</option>
-      <option value="double">Double Skin</option>
+    <label for="materialType">Material Type:</label>
+    <select id="materialType" onchange="toggleBrickOptions()">
+      <option value="brick">Brick</option>
+      <option value="block">Block</option>
+      <option value="slab">Paving Slab</option>
     </select>
 
-    <label for="brickHeight">Brick Height:</label>
-    <select id="brickHeight" required>
-      <option value="0.075">65mm (Standard)</option>
-      <option value="0.083">73mm (Imperial)</option>
+    <div id="brickOptions">
+      <label for="brickHeight">Brick Height (including mortar):</label>
+      <select id="brickHeight">
+        <option value="0.075">65mm (Standard)</option>
+        <option value="0.083">73mm (Imperial)</option>
+      </select>
+    </div>
+
+    <label for="length">Wall/Area Length (meters):</label>
+    <input type="number" id="length" step="0.01" required>
+
+    <label for="height">Wall/Area Height (meters):</label>
+    <input type="number" id="height" step="0.01" required>
+
+    <label for="wallType">Wall Type (for Bricks/Blocks):</label>
+    <select id="wallType">
+      <option value="single">Single Skin</option>
+      <option value="double">Double Skin</option>
     </select>
 
     <button onclick="calculateMaterials()">Calculate</button>
@@ -82,35 +91,69 @@
   </div>
 
   <script>
+    function toggleBrickOptions() {
+      const material = document.getElementById('materialType').value;
+      document.getElementById('brickOptions').style.display = material === 'brick' ? 'block' : 'none';
+      document.getElementById('wallType').disabled = material === 'slab'; // wallType not needed for slabs
+    }
+
     function calculateMaterials() {
       const length = parseFloat(document.getElementById('length').value);
       const height = parseFloat(document.getElementById('height').value);
       const wallType = document.getElementById('wallType').value;
-      const selectedBrickHeight = parseFloat(document.getElementById('brickHeight').value);
+      const materialType = document.getElementById('materialType').value;
+      const brickHeight = parseFloat(document.getElementById('brickHeight').value);
       const resultBox = document.getElementById('result');
 
       if (isNaN(length) || isNaN(height) || length <= 0 || height <= 0) {
-        resultBox.innerHTML = "<strong>Please enter valid wall dimensions.</strong>";
+        resultBox.innerHTML = "<strong>Please enter valid wall or surface dimensions.</strong>";
         return;
       }
 
-      const wallArea = length * height;
-      const skinMultiplier = wallType === 'double' ? 2 : 1;
+      const area = length * height;
+      let unitWidth, unitHeight, unitName;
+      let skinMultiplier = (materialType === 'slab') ? 1 : (wallType === 'double' ? 2 : 1);
 
-      const brickLength = 0.225; // Standard brick length with mortar
-      const brickArea = brickLength * selectedBrickHeight;
+      switch (materialType) {
+        case 'brick':
+          unitWidth = 0.225;
+          unitHeight = brickHeight;
+          unitName = 'Bricks';
+          break;
+        case 'block':
+          unitWidth = 0.44;
+          unitHeight = 0.215;
+          unitName = 'Blocks';
+          break;
+        case 'slab':
+          unitWidth = 0.6;
+          unitHeight = 0.6;
+          unitName = 'Paving Slabs';
+          break;
+      }
 
-      const bricksNeeded = Math.ceil((wallArea / brickArea) * 1.05 * skinMultiplier);
-      const cementBags = Math.ceil(wallArea * 0.3 * skinMultiplier);
-      const sandBags = Math.ceil(wallArea * 1.2 * skinMultiplier);
+      const unitArea = unitWidth * unitHeight;
+      const unitsNeeded = Math.ceil((area / unitArea) * 1.05 * skinMultiplier);
+
+      let cementBags = 0;
+      let sandBags = 0;
+
+      if (materialType !== 'slab') {
+        cementBags = Math.ceil(area * 0.3 * skinMultiplier);
+        sandBags = Math.ceil(area * 1.2 * skinMultiplier);
+      }
 
       resultBox.innerHTML = `
-        <strong>Estimated Materials Required (${wallType === 'double' ? 'Double Skin' : 'Single Skin'} Wall):</strong><br>
-        Bricks: <strong>${bricksNeeded}</strong><br>
-        25kg Cement Bags: <strong>${cementBags}</strong><br>
-        25kg Sand Bags: <strong>${sandBags}</strong>
+        <strong>Estimated Materials Required (${unitName}, ${materialType === 'slab' ? 'Surface' : skinMultiplier === 2 ? 'Double Skin' : 'Single Skin'}):</strong><br>
+        ${materialType === 'brick' ? 'Brick Height: <strong>' + (brickHeight * 1000) + ' mm</strong><br>' : ''}
+        ${unitName}: <strong>${unitsNeeded}</strong><br>
+        ${materialType !== 'slab' ? '25kg Cement Bags: <strong>' + cementBags + '</strong><br>' : ''}
+        ${materialType !== 'slab' ? '25kg Sand Bags: <strong>' + sandBags + '</strong>' : ''}
       `;
     }
+
+    // Init
+    toggleBrickOptions();
   </script>
 </body>
 </html>
