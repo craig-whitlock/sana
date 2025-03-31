@@ -11,7 +11,7 @@
       padding: 20px;
     }
     .calculator-container {
-      max-width: 500px;
+      max-width: 550px;
       margin: auto;
       background: #fff;
       padding: 30px;
@@ -52,6 +52,9 @@
       border-radius: 6px;
       font-size: 16px;
     }
+    .hidden {
+      display: none;
+    }
   </style>
 </head>
 <body>
@@ -59,7 +62,7 @@
     <h2>Wall / Surface Material Calculator</h2>
 
     <label for="materialType">Material Type:</label>
-    <select id="materialType" onchange="toggleBrickOptions()">
+    <select id="materialType" onchange="updateUI()">
       <option value="brick">Brick</option>
       <option value="block">Block</option>
       <option value="slab">Paving Slab</option>
@@ -79,11 +82,32 @@
     <label for="height">Wall/Area Height (meters):</label>
     <input type="number" id="height" step="0.01" required>
 
-    <label for="wallType">Wall Type (for Bricks/Blocks):</label>
-    <select id="wallType">
-      <option value="single">Single Skin</option>
-      <option value="double">Double Skin</option>
-    </select>
+    <div id="wallTypeSection">
+      <label for="wallType">Wall Type (for Bricks/Blocks):</label>
+      <select id="wallType">
+        <option value="single">Single Skin</option>
+        <option value="double">Double Skin</option>
+      </select>
+    </div>
+
+    <div id="slabOptions" class="hidden">
+      <label for="slabSize">Slab Size:</label>
+      <select id="slabSize" onchange="toggleCustomSlabInputs()">
+        <option value="600x600">600 x 600 mm</option>
+        <option value="600x300">600 x 300 mm</option>
+        <option value="450x450">450 x 450 mm</option>
+        <option value="900x600">900 x 600 mm</option>
+        <option value="custom">Custom Size</option>
+      </select>
+
+      <div id="customSlabInputs" class="hidden">
+        <label for="customSlabWidth">Slab Width (mm):</label>
+        <input type="number" id="customSlabWidth" placeholder="e.g. 500">
+
+        <label for="customSlabHeight">Slab Height (mm):</label>
+        <input type="number" id="customSlabHeight" placeholder="e.g. 500">
+      </div>
+    </div>
 
     <button onclick="calculateMaterials()">Calculate</button>
 
@@ -91,10 +115,16 @@
   </div>
 
   <script>
-    function toggleBrickOptions() {
+    function updateUI() {
       const material = document.getElementById('materialType').value;
       document.getElementById('brickOptions').style.display = material === 'brick' ? 'block' : 'none';
-      document.getElementById('wallType').disabled = material === 'slab'; // wallType not needed for slabs
+      document.getElementById('wallTypeSection').style.display = material === 'slab' ? 'none' : 'block';
+      document.getElementById('slabOptions').classList.toggle('hidden', material !== 'slab');
+    }
+
+    function toggleCustomSlabInputs() {
+      const slabSize = document.getElementById('slabSize').value;
+      document.getElementById('customSlabInputs').classList.toggle('hidden', slabSize !== 'custom');
     }
 
     function calculateMaterials() {
@@ -103,6 +133,7 @@
       const wallType = document.getElementById('wallType').value;
       const materialType = document.getElementById('materialType').value;
       const brickHeight = parseFloat(document.getElementById('brickHeight').value);
+      const slabSize = document.getElementById('slabSize')?.value;
       const resultBox = document.getElementById('result');
 
       if (isNaN(length) || isNaN(height) || length <= 0 || height <= 0) {
@@ -111,25 +142,36 @@
       }
 
       const area = length * height;
-      let unitWidth, unitHeight, unitName;
       let skinMultiplier = (materialType === 'slab') ? 1 : (wallType === 'double' ? 2 : 1);
 
-      switch (materialType) {
-        case 'brick':
-          unitWidth = 0.225;
-          unitHeight = brickHeight;
-          unitName = 'Bricks';
-          break;
-        case 'block':
-          unitWidth = 0.44;
-          unitHeight = 0.215;
-          unitName = 'Blocks';
-          break;
-        case 'slab':
-          unitWidth = 0.6;
-          unitHeight = 0.6;
-          unitName = 'Paving Slabs';
-          break;
+      let unitWidth, unitHeight, unitName;
+      let customSlabMsg = "";
+
+      if (materialType === 'brick') {
+        unitWidth = 0.225;
+        unitHeight = brickHeight;
+        unitName = 'Bricks';
+      } else if (materialType === 'block') {
+        unitWidth = 0.44;
+        unitHeight = 0.215;
+        unitName = 'Blocks';
+      } else if (materialType === 'slab') {
+        if (slabSize === 'custom') {
+          const customWidth = parseFloat(document.getElementById('customSlabWidth').value);
+          const customHeight = parseFloat(document.getElementById('customSlabHeight').value);
+          if (isNaN(customWidth) || isNaN(customHeight) || customWidth <= 0 || customHeight <= 0) {
+            resultBox.innerHTML = "<strong>Please enter valid custom slab dimensions.</strong>";
+            return;
+          }
+          unitWidth = customWidth / 1000;
+          unitHeight = customHeight / 1000;
+          customSlabMsg = `Custom Slab Size: <strong>${customWidth} x ${customHeight} mm</strong><br>`;
+        } else {
+          const dims = slabSize.split('x');
+          unitWidth = parseInt(dims[0]) / 1000;
+          unitHeight = parseInt(dims[1]) / 1000;
+        }
+        unitName = 'Paving Slabs';
       }
 
       const unitArea = unitWidth * unitHeight;
@@ -144,16 +186,18 @@
       }
 
       resultBox.innerHTML = `
-        <strong>Estimated Materials Required (${unitName}, ${materialType === 'slab' ? 'Surface' : skinMultiplier === 2 ? 'Double Skin' : 'Single Skin'}):</strong><br>
+        <strong>Estimated Materials Required (${unitName}):</strong><br>
+        Total Area: <strong>${area.toFixed(2)} m²</strong><br>
         ${materialType === 'brick' ? 'Brick Height: <strong>' + (brickHeight * 1000) + ' mm</strong><br>' : ''}
+        ${materialType === 'slab' ? customSlabMsg + 'Slab Size: <strong>' + Math.round(unitWidth * 1000) + ' x ' + Math.round(unitHeight * 1000) + ' mm</strong><br>' : ''}
         ${unitName}: <strong>${unitsNeeded}</strong><br>
         ${materialType !== 'slab' ? '25kg Cement Bags: <strong>' + cementBags + '</strong><br>' : ''}
         ${materialType !== 'slab' ? '25kg Sand Bags: <strong>' + sandBags + '</strong>' : ''}
       `;
     }
 
-    // Init
-    toggleBrickOptions();
+    // Init UI
+    updateUI();
   </script>
 </body>
 </html>
