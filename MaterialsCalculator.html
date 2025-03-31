@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Wall Material Calculator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f9;
+      padding: 20px;
+    }
+    .calculator-container {
+      max-width: 500px;
+      margin: auto;
+      background: #fff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+      color: #333;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+    input, select, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border-radius: 6px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+    }
+    button {
+      background-color: #007acc;
+      color: white;
+      border: none;
+      margin-top: 20px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #005fa3;
+    }
+    #result {
+      margin-top: 20px;
+      background: #e9f5ff;
+      padding: 15px;
+      border-radius: 6px;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+  <div class="calculator-container">
+    <h2>Wall Material Calculator</h2>
+
+    <label for="length">Wall Length (meters):</label>
+    <input type="number" id="length" step="0.01" required>
+
+    <label for="height">Wall Height (meters):</label>
+    <input type="number" id="height" step="0.01" required>
+
+    <label for="wallType">Wall Type:</label>
+    <select id="wallType" required>
+      <option value="single">Single Skin</option>
+      <option value="double">Double Skin</option>
+    </select>
+
+    <button onclick="calculateMaterials()">Calculate</button>
+
+    <div id="result"></div>
+  </div>
+
+  <script>
+    function calculateMaterials() {
+      const length = parseFloat(document.getElementById('length').value);
+      const height = parseFloat(document.getElementById('height').value);
+      const wallType = document.getElementById('wallType').value;
+      const resultBox = document.getElementById('result');
+
+      if (isNaN(length) || isNaN(height) || length <= 0 || height <= 0) {
+        resultBox.innerHTML = "<strong>Please enter valid wall dimensions.</strong>";
+        return;
+      }
+
+      const wallArea = length * height;
+      const skinMultiplier = wallType === 'double' ? 2 : 1;
+
+      const brickLength = 0.225;
+      const brickHeight = 0.075;
+      const brickArea = brickLength * brickHeight;
+
+      const bricksNeeded = Math.ceil((wallArea / brickArea) * 1.05 * skinMultiplier);
+      const cementBags = Math.ceil(wallArea * 0.3 * skinMultiplier);
+      const sandBags = Math.ceil(wallArea * 1.2 * skinMultiplier);
+
+      resultBox.innerHTML = `
+        <strong>Estimated Materials Required (${wallType === 'double' ? 'Double Skin' : 'Single Skin'}):</strong><br>
+        Bricks: <strong>${bricksNeeded}</strong><br>
+        25kg Cement Bags: <strong>${cementBags}</strong><br>
+        25kg Sand Bags: <strong>${sandBags}</strong>
+      `;
+    }
+  </script>
+</body>
+</html>
