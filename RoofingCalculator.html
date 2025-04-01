@@ -11,7 +11,6 @@
       margin: 0;
       padding: 20px;
     }
-
     .container {
       max-width: 700px;
       margin: auto;
@@ -21,32 +20,27 @@
       box-shadow: 0 4px 20px rgba(0,0,0,0.08);
       border-top: 4px solid #D42F2F;
     }
-
     h2 {
       text-align: center;
       color: #2c3e50;
       margin-bottom: 20px;
     }
-
     .row {
       display: flex;
       flex-wrap: wrap;
       gap: 15px;
       margin-bottom: 15px;
     }
-
     .row > div {
       flex: 1;
       min-width: 140px;
     }
-
     .checkbox-row {
       display: flex;
       flex-direction: column;
       gap: 10px;
       margin-bottom: 15px;
     }
-
     .checkbox-row label {
       display: flex;
       align-items: center;
@@ -55,14 +49,12 @@
       margin: 0;
       color: #333;
     }
-
     label {
       font-weight: bold;
       display: block;
       margin-bottom: 5px;
       color: #333;
     }
-
     input[type="text"], input[type="number"], select {
       width: 100%;
       padding: 10px;
@@ -71,7 +63,6 @@
       border: 1px solid #ccc;
       font-size: 15px;
     }
-
     button {
       margin-top: 20px;
       width: 100%;
@@ -84,11 +75,9 @@
       cursor: pointer;
       transition: background 0.3s ease;
     }
-
     button:hover {
       background: #b52828;
     }
-
     .results-box {
       margin-top: 20px;
       background: #ffeaea;
@@ -98,11 +87,9 @@
       color: #222;
       border-left: 4px solid #D42F2F;
     }
-
     .result-extra {
       margin-bottom: 8px;
     }
-
     .footnote {
       font-size: 13px;
       color: #666;
@@ -148,13 +135,29 @@
   <div class="checkbox-row">
     <label><input type="checkbox" id="overhang"> Include Overhang (+0.3m each side)</label>
     <label><input type="checkbox" id="doubleSided"> Up & Over (Double-sided roof)</label>
-    <label><input type="checkbox" id="includeRidge" onchange="toggleRidge()"> Include Ridge Tiles</label>
+    <label><input type="checkbox" id="includeRidge" onchange="toggleExtra('ridgeInput')"> Include Ridge Tiles</label>
+    <label><input type="checkbox" id="includeHip" onchange="toggleExtra('hipInput')"> Include Hip Tiles</label>
+    <label><input type="checkbox" id="includeValley" onchange="toggleExtra('valleyInput')"> Include Valley Liners</label>
   </div>
 
   <div class="row" id="ridgeInput" style="display:none">
     <div>
       <label for="ridgeLength">Ridge Length (m)</label>
       <input type="number" id="ridgeLength" step="0.01">
+    </div>
+  </div>
+
+  <div class="row" id="hipInput" style="display:none">
+    <div>
+      <label for="hipLength">Total Hip Length (m)</label>
+      <input type="number" id="hipLength" step="0.01">
+    </div>
+  </div>
+
+  <div class="row" id="valleyInput" style="display:none">
+    <div>
+      <label for="valleyLength">Total Valley Length (m)</label>
+      <input type="number" id="valleyLength" step="0.01">
     </div>
   </div>
 
@@ -168,9 +171,8 @@
 </div>
 
 <script>
-  function toggleRidge() {
-    document.getElementById('ridgeInput').style.display = 
-      document.getElementById('includeRidge').checked ? 'flex' : 'none';
+  function toggleExtra(id) {
+    document.getElementById(id).style.display = document.getElementById('include' + id.charAt(0).toUpperCase() + id.slice(1)).checked ? 'flex' : 'none';
     sendHeight();
   }
 
@@ -181,12 +183,20 @@
     const tileDensity = parseFloat(document.getElementById('tileType').value);
     const overhang = document.getElementById('overhang').checked ? 0.6 : 0;
     const doubleSided = document.getElementById('doubleSided').checked;
+
     const includeRidge = document.getElementById('includeRidge').checked;
     const ridgeLength = includeRidge ? parseFloat(document.getElementById('ridgeLength').value) : 0;
 
+    const includeHip = document.getElementById('includeHip').checked;
+    const hipLength = includeHip ? parseFloat(document.getElementById('hipLength').value) : 0;
+
+    const includeValley = document.getElementById('includeValley').checked;
+    const valleyLength = includeValley ? parseFloat(document.getElementById('valleyLength').value) : 0;
+
     const results = document.getElementById('results');
 
-    if (isNaN(width) || isNaN(height) || width <= 0 || height <= 0 || (includeRidge && isNaN(ridgeLength))) {
+    if (isNaN(width) || isNaN(height) || width <= 0 || height <= 0 ||
+        (includeRidge && isNaN(ridgeLength)) || (includeHip && isNaN(hipLength)) || (includeValley && isNaN(valleyLength))) {
       results.innerHTML = '<strong>Please enter valid inputs.</strong>';
       results.style.display = 'block';
       sendHeight();
@@ -203,6 +213,8 @@
     const underlayRolls = Math.ceil(roofArea / 50);
     const battens = Math.ceil(adjustedHeight / 0.3) * adjustedWidth * (doubleSided ? 2 : 1);
     const ridgeTiles = includeRidge ? Math.ceil((ridgeLength / 0.3) * 1.1) : 0;
+    const hipTiles = includeHip ? Math.ceil((hipLength / 0.3) * 1.1) : 0;
+    const valleyLiners = includeValley ? Math.ceil(valleyLength / 3) : 0;
 
     results.innerHTML = `
       <div class="result-extra">Pitched Roof Area: <strong>${roofArea.toFixed(2)} m²</strong></div>
@@ -210,7 +222,10 @@
       <div class="result-extra">Underlay Rolls Needed: <strong>${underlayRolls}</strong> (50m² per roll)</div>
       <div class="result-extra">Battens Needed (est.): <strong>${battens.toFixed(0)} m</strong></div>
       ${includeRidge ? `<div class="result-extra">Ridge Tiles Needed: <strong>${ridgeTiles}</strong></div>` : ''}
+      ${includeHip ? `<div class="result-extra">Hip Tiles Needed: <strong>${hipTiles}</strong></div>` : ''}
+      ${includeValley ? `<div class="result-extra">Valley Liners Needed: <strong>${valleyLiners}</strong> (3m each)</div>` : ''}
     `;
+
     results.style.display = 'block';
     sendHeight();
   }
@@ -219,12 +234,10 @@
     const height = document.body.scrollHeight;
     parent.postMessage(height, '*');
   }
-
   window.onload = () => {
     sendHeight();
     setTimeout(sendHeight, 500);
   };
-
   window.addEventListener('resize', sendHeight);
 </script>
 </body>
