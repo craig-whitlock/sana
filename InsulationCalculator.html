@@ -84,27 +84,18 @@
       border-left: 4px solid #D42F2F;
     }
 
-    .result-group {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-
     .result-number {
-      font-size: 28px;
+      font-size: 32px;
       font-weight: bold;
       color: #D42F2F;
-      line-height: 1.2;
+      text-align: center;
     }
 
     .result-label {
-      font-size: 14px;
-      color: #555;
-      margin-top: 5px;
-    }
-
-    .result-extra {
       font-size: 16px;
-      margin-bottom: 8px;
+      color: #555;
+      text-align: center;
+      margin-top: 8px;
     }
 
     .footnote {
@@ -150,7 +141,7 @@
         </div>
       </div>
 
-      <button onclick="calculateLoft()">Calculate</button>
+      <button onclick="calculateRolls()">Calculate</button>
 
       <div id="result" class="results-box" style="display: none;"></div>
     </div>
@@ -162,7 +153,7 @@
   </div>
 
   <script>
-    function calculateLoft() {
+    function calculateRolls() {
       const length = parseFloat(document.getElementById("length").value);
       const width = parseFloat(document.getElementById("width").value);
       const thickness = document.getElementById("thickness").value;
@@ -176,28 +167,18 @@
       }
 
       const area = length * width;
-      const thicknessMM = parseInt(thickness);
-      const volume = area * (thicknessMM / 1000);
-
       let coverage = 0;
+
       if (thickness == "100") coverage = 14.13;
       else if (thickness == "150") coverage = 9.34;
       else if (thickness == "170") coverage = 8.15;
       else if (thickness == "200") coverage = 6.03;
 
-      const rolls = Math.ceil((area * 1.1) / coverage);
+      const rolls = Math.ceil((area * 1.1) / coverage); // 10% wastage
 
       result.innerHTML = `
-        <div class="result-group">
-          <div class="result-number">${area.toFixed(2)} m²</div>
-          <div class="result-label">Loft Area</div>
-        </div>
-        <div class="result-group">
-          <div class="result-number">${volume.toFixed(2)} m³</div>
-          <div class="result-label">Insulation Volume</div>
-        </div>
-        <div class="result-extra">Rolls Required (${thickness}mm): <strong>${rolls}</strong><br>
-        <small>Includes 10% wastage allowance.</small></div>
+        <div class="result-number">${rolls}</div>
+        <div class="result-label">Rolls Required (${thickness}mm)</div>
       `;
       result.style.display = "block";
       sendHeight();
