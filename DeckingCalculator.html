@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Timber Decking Calculator</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f2f4f7;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 700px;
+      margin: auto;
+      background: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      border-top: 4px solid #D42F2F;
+    }
+    h2 {
+      text-align: center;
+      color: #2c3e50;
+      margin-bottom: 20px;
+    }
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-bottom: 15px;
+    }
+    .row > div {
+      flex: 1;
+      min-width: 140px;
+    }
+    label {
+      font-weight: bold;
+      display: block;
+      margin-bottom: 5px;
+      color: #333;
+    }
+    input, select {
+      width: 100%;
+      padding: 10px;
+      box-sizing: border-box;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 15px;
+    }
+    button {
+      margin-top: 20px;
+      width: 100%;
+      padding: 12px;
+      background: #D42F2F;
+      color: white;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    button:hover {
+      background: #b52828;
+    }
+    .results-box {
+      margin-top: 20px;
+      background: #ffeaea;
+      padding: 20px;
+      border-radius: 8px;
+      font-size: 16px;
+      color: #222;
+      border-left: 4px solid #D42F2F;
+      text-align: center;
+    }
+    .result-number {
+      font-size: 32px;
+      font-weight: bold;
+      color: #D42F2F;
+      line-height: 1.2;
+    }
+    .result-label {
+      font-size: 14px;
+      color: #555;
+      margin-top: 5px;
+    }
+    .footnote {
+      font-size: 13px;
+      color: #666;
+      margin-top: 20px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h2>Timber Decking Calculator</h2>
+
+  <div class="row">
+    <div>
+      <label for="deckLength">Decking Length (m)</label>
+      <input type="number" id="deckLength" step="0.01">
+    </div>
+    <div>
+      <label for="deckWidth">Decking Width (m)</label>
+      <input type="number" id="deckWidth" step="0.01">
+    </div>
+  </div>
+
+  <div class="row">
+    <div>
+      <label for="boardWidth">Board Width (mm)</label>
+      <select id="boardWidth">
+        <option value="125">125mm</option>
+        <option value="150">150mm</option>
+        <option value="200">200mm</option>
+      </select>
+    </div>
+    <div>
+      <label for="boardLength">Board Length (m)</label>
+      <select id="boardLength">
+        <option value="3">3m</option>
+        <option value="4">4m</option>
+        <option value="5">5m</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="row">
+    <div>
+      <label for="spacing">Board Spacing (mm)</label>
+      <input type="number" id="spacing" step="1" value="5">
+    </div>
+    <div>
+      <label for="wastage">Wastage (%)</label>
+      <select id="wastage">
+        <option value="5">5%</option>
+        <option value="10">10%</option>
+      </select>
+    </div>
+  </div>
+
+  <button onclick="calculateDecking()">Calculate</button>
+
+  <div id="results" class="results-box" style="display: none;"></div>
+
+  <div class="footnote">
+    Estimations include wastage for cuts and off-cuts.
+  </div>
+</div>
+
+<script>
+  function calculateDecking() {
+    const deckLength = parseFloat(document.getElementById('deckLength').value);
+    const deckWidth = parseFloat(document.getElementById('deckWidth').value);
+    const boardWidth = parseInt(document.getElementById('boardWidth').value) / 1000;  // in meters
+    const boardLength = parseFloat(document.getElementById('boardLength').value);
+    const spacing = parseInt(document.getElementById('spacing').value) / 1000; // in meters
+    const wastage = parseInt(document.getElementById('wastage').value) / 100;
+    const results = document.getElementById('results');
+
+    if (isNaN(deckLength) || isNaN(deckWidth) || deckLength <= 0 || deckWidth <= 0) {
+      results.innerHTML = '<strong>Please enter valid dimensions.</strong>';
+      results.style.display = "block";
+      return;
+    }
+
+    const totalArea = deckLength * deckWidth;  // m²
+    const boardArea = (boardWidth + spacing) * boardLength;  // m² (including spacing)
+    const boardsNeeded = Math.ceil(totalArea / boardArea);
+    const packsNeeded = Math.ceil(boardsNeeded / 10);  // Assuming 10 boards per pack
+
+    // Apply wastage
+    const boardsWithWastage = Math.ceil(boardsNeeded * (1 + wastage));
+
+    results.innerHTML = `
+      <div class="result-number">${boardsWithWastage}</div>
+      <div class="result-label">Boards Required (incl. wastage)</div>
+      <div class="result-number">${packsNeeded}</div>
+      <div class="result-label">Packs Required (10 boards per pack)</div>
+    `;
+    results.style.display = "block";
+    sendHeight();
+  }
+
+  function sendHeight() {
+    const height = document.body.scrollHeight;
+    parent.postMessage(height, '*');
+  }
+
+  window.onload = () => {
+    sendHeight();
+    setTimeout(sendHeight, 500);
+  };
+
+  window.addEventListener('resize', sendHeight);
+</script>
+</body>
+</html>
