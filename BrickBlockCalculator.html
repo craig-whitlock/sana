@@ -1,4 +1,3 @@
-<!-- Full file: brick-block-calculator.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -135,8 +134,8 @@
         <div>
           <label for="stdType">Material Type</label>
           <select id="stdType">
-            <option value="brick">Standard House Brick (215 x 65mm)</option>
-            <option value="block">Standard Block (440 x 215mm)</option>
+            <option value="brick">Standard House Brick (215 x 65mm + 10mm joint)</option>
+            <option value="block">Standard Block (440 x 215mm + 10mm joint)</option>
           </select>
         </div>
       </div>
@@ -198,13 +197,13 @@
       let unitWidth, unitHeight, label;
 
       if (type === 'brick') {
-        unitWidth = 0.215;
-        unitHeight = 0.065;
-        label = "Standard House Bricks";
+        unitWidth = (215 + 10) / 1000;  // 225mm with joint
+        unitHeight = (65 + 10) / 1000;  // 75mm with joint
+        label = "Standard House Bricks (incl. 10mm joint)";
       } else {
-        unitWidth = 0.44;
-        unitHeight = 0.215;
-        label = "Standard Blocks";
+        unitWidth = (440 + 10) / 1000;  // 450mm with joint
+        unitHeight = (215 + 10) / 1000; // 225mm with joint
+        label = "Standard Blocks (incl. 10mm joint)";
       }
 
       const unitArea = unitWidth * unitHeight;
