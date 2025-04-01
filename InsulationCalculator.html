@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Wall & Loft Insulation Calculator</title>
+  <title>Loft Insulation Calculator</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
@@ -22,16 +22,10 @@
       border-top: 4px solid #D42F2F;
     }
 
-    h2, h3 {
+    h2 {
       text-align: center;
       color: #2c3e50;
       margin-bottom: 10px;
-    }
-
-    h3 {
-      border-bottom: 2px solid #D42F2F;
-      padding-bottom: 6px;
-      margin-top: 30px;
     }
 
     .row {
@@ -54,7 +48,7 @@
       color: #333;
     }
 
-    input, select {
+    input {
       width: 100%;
       padding: 10px;
       box-sizing: border-box;
@@ -121,7 +115,6 @@
     }
 
     .section {
-      margin-bottom: 30px;
       background: #f9fafc;
       padding: 20px;
       border-radius: 10px;
@@ -131,128 +124,46 @@
 </head>
 <body>
   <div class="container">
-    <h2>Insulation Calculator</h2>
+    <h2>Loft Insulation Calculator</h2>
 
-    <!-- CAVITY WALL INSULATION -->
     <div class="section">
-      <h3>Cavity Wall Insulation</h3>
       <div class="row">
         <div>
-          <label for="wallLength">Wall Length (m)</label>
-          <input type="number" id="wallLength" step="0.01">
+          <label for="length">Loft Length (m)</label>
+          <input type="number" id="length" step="0.01">
         </div>
         <div>
-          <label for="wallHeight">Wall Height (m)</label>
-          <input type="number" id="wallHeight" step="0.01">
+          <label for="width">Loft Width (m)</label>
+          <input type="number" id="width" step="0.01">
         </div>
       </div>
-      <div class="row">
-        <div>
-          <label for="cavityWidth">Cavity Width (mm)</label>
-          <input type="number" id="cavityWidth">
-        </div>
-        <div>
-          <label for="insulationType">Insulation Type</label>
-          <select id="insulationType">
-            <option value="pir">PIR Board (1200 x 600mm)</option>
-            <option value="wool">Mineral Wool (bags)</option>
-            <option value="beads">Polystyrene Beads (loose fill)</option>
-          </select>
-        </div>
-      </div>
-      <button onclick="calculateCavity()">Calculate</button>
-      <div id="resultCavity" class="results-box" style="display: none;"></div>
-    </div>
 
-    <!-- LOFT INSULATION -->
-    <div class="section">
-      <h3>Loft Insulation</h3>
       <div class="row">
         <div>
-          <label for="loftLength">Loft Length (m)</label>
-          <input type="number" id="loftLength" step="0.01">
-        </div>
-        <div>
-          <label for="loftWidth">Loft Width (m)</label>
-          <input type="number" id="loftWidth" step="0.01">
+          <label for="thickness">Insulation Thickness (mm)</label>
+          <input type="number" id="thickness" value="200">
         </div>
       </div>
-      <div class="row">
-        <div>
-          <label for="loftThickness">Insulation Thickness (mm)</label>
-          <input type="number" id="loftThickness" value="200">
-        </div>
-        <div>
-          <label for="rollCoverage">Roll Coverage (m²)</label>
-          <input type="number" id="rollCoverage" value="9.6">
-        </div>
-      </div>
+
       <button onclick="calculateLoft()">Calculate</button>
-      <div id="resultLoft" class="results-box" style="display: none;"></div>
+
+      <div id="result" class="results-box" style="display: none;"></div>
     </div>
 
     <div class="footnote">
-      These are estimations only and include a 10% allowance for wastage.
+      This is an estimation only and includes a 10% allowance for wastage.<br>
+      Based on insulation rolls 1160mm wide.
     </div>
   </div>
 
   <script>
-    function calculateCavity() {
-      const length = parseFloat(document.getElementById("wallLength").value);
-      const height = parseFloat(document.getElementById("wallHeight").value);
-      const cavityWidth = parseFloat(document.getElementById("cavityWidth").value);
-      const type = document.getElementById("insulationType").value;
-      const result = document.getElementById("resultCavity");
-
-      if (isNaN(length) || isNaN(height) || isNaN(cavityWidth) || length <= 0 || height <= 0 || cavityWidth <= 0) {
-        result.innerHTML = "<strong>Please enter valid wall dimensions and cavity width.</strong>";
-        result.style.display = "block";
-        sendHeight();
-        return;
-      }
-
-      const area = length * height;
-      const cavityDepth = cavityWidth / 1000;
-      const volume = area * cavityDepth * 1.1;
-
-      let materialOutput = "";
-      if (type === "pir") {
-        const boardArea = 1.2 * 0.6;
-        const boards = Math.ceil((area / boardArea) * 1.1);
-        materialOutput = `PIR Boards Needed: <strong>${boards}</strong> (1.2m x 0.6m)`;
-      } else if (type === "wool") {
-        const bagCoverage = 0.08;
-        const bags = Math.ceil(volume / bagCoverage);
-        materialOutput = `Mineral Wool Bags Needed: <strong>${bags}</strong> (80L bags)`;
-      } else {
-        const bags = Math.ceil(volume);
-        materialOutput = `Polystyrene Bead Bags Needed: <strong>${bags}</strong>`;
-      }
-
-      result.innerHTML = `
-        <div class="result-group">
-          <div class="result-number">${area.toFixed(2)} m²</div>
-          <div class="result-label">Wall Area</div>
-        </div>
-        <div class="result-group">
-          <div class="result-number">${volume.toFixed(2)} m³</div>
-          <div class="result-label">Cavity Volume (with 10% wastage)</div>
-        </div>
-        <div class="result-extra">${materialOutput}</div>
-      `;
-      result.style.display = "block";
-      sendHeight();
-    }
-
     function calculateLoft() {
-      const length = parseFloat(document.getElementById("loftLength").value);
-      const width = parseFloat(document.getElementById("loftWidth").value);
-      const thickness = parseFloat(document.getElementById("loftThickness").value);
-      const rollCoverage = parseFloat(document.getElementById("rollCoverage").value);
-      const result = document.getElementById("resultLoft");
+      const length = parseFloat(document.getElementById("length").value);
+      const width = parseFloat(document.getElementById("width").value);
+      const thickness = parseFloat(document.getElementById("thickness").value);
+      const result = document.getElementById("result");
 
-      if (isNaN(length) || isNaN(width) || isNaN(thickness) || isNaN(rollCoverage) ||
-          length <= 0 || width <= 0 || thickness <= 0 || rollCoverage <= 0) {
+      if (isNaN(length) || isNaN(width) || isNaN(thickness) || length <= 0 || width <= 0 || thickness <= 0) {
         result.innerHTML = "<strong>Please enter valid loft dimensions and thickness.</strong>";
         result.style.display = "block";
         sendHeight();
@@ -260,8 +171,10 @@
       }
 
       const area = length * width;
-      const volume = area * (thickness / 1000);
-      const rollsNeeded = Math.ceil((area * 1.1) / rollCoverage);
+      const volume = area * (thickness / 1000); // m³
+      const rollWidth = 1.16; // 1160mm
+      const rollArea = rollWidth * length;
+      const rollsNeeded = Math.ceil((area * 1.1) / rollArea); // 10% wastage
 
       result.innerHTML = `
         <div class="result-group">
@@ -272,7 +185,7 @@
           <div class="result-number">${volume.toFixed(2)} m³</div>
           <div class="result-label">Insulation Volume</div>
         </div>
-        <div class="result-extra">Rolls Required: <strong>${rollsNeeded}</strong> (at ${rollCoverage} m² per roll)</div>
+        <div class="result-extra">Rolls Required (1160mm wide): <strong>${rollsNeeded}</strong></div>
       `;
       result.style.display = "block";
       sendHeight();
