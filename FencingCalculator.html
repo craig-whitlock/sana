@@ -36,19 +36,11 @@
       min-width: 140px;
     }
     label {
-  font-weight: bold;
-  display: block;
-  margin-bottom: 5px;
-  color: #333;
-}
-.checkbox label {
-  font-weight: normal;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 0;
-  line-height: 1.2;
-}
+      font-weight: bold;
+      display: block;
+      margin-bottom: 5px;
+      color: #333;
+    }
     input, select {
       width: 100%;
       padding: 10px;
@@ -131,8 +123,8 @@
   </div>
 
   <div class="checkbox">
-  <label><input type="checkbox" id="includeGate" onchange="toggleGate()"> Include Gate?</label>
-</div>
+    <label><input type="checkbox" id="includeGate" onchange="toggleGate()"> Include Gate?</label>
+  </div>
 
   <div class="row" id="gateRow" style="display:none">
     <div>
@@ -187,7 +179,7 @@
     if (isNaN(totalLength) || isNaN(panelWidth) || panelWidth <= 0 || totalLength <= 0 || (includeGate && isNaN(gateWidth))) {
       results.innerHTML = '<strong>Please enter valid dimensions.</strong>';
       results.style.display = "block";
-sendHeight();
+      sendHeight();
       return;
     }
 
@@ -200,21 +192,23 @@ sendHeight();
       <div class="result-label">Panels Required</div>
       <div class="result-number">${posts}</div>
       <div class="result-label">${postType.charAt(0).toUpperCase() + postType.slice(1)} Posts Required</div>
-      ${includeGate ? `<div class="result-number">1</div><div class="result-label">Gate Included (${gateWidth}m)</div>` : ''}
+      ${includeGate ? `<div class="result-number">1</div><div class="result-label">Gate Included (${gateWidth * 1000}mm)</div>` : ''}
     `;
     results.style.display = "block";
+    sendHeight();
   }
-function sendHeight() {
-  const height = document.body.scrollHeight;
-  parent.postMessage(height, '*');
-}
 
-window.onload = () => {
-  sendHeight();
-  setTimeout(sendHeight, 500);
-};
+  function sendHeight() {
+    const height = document.body.scrollHeight;
+    parent.postMessage(height, '*');
+  }
 
-window.addEventListener("resize", sendHeight);
+  window.onload = () => {
+    sendHeight();
+    setTimeout(sendHeight, 500);
+  };
+
+  window.addEventListener("resize", sendHeight);
 </script>
 </body>
 </html>
