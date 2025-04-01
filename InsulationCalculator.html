@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cavity Wall Insulation Calculator</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f2f4f7;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 700px;
+      margin: auto;
+      background: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      border-top: 4px solid #D42F2F;
+    }
+
+    h2 {
+      text-align: center;
+      color: #2c3e50;
+      margin-bottom: 10px;
+    }
+
+    h3 {
+      margin-top: 30px;
+      margin-bottom: 15px;
+      padding-bottom: 5px;
+      border-bottom: 2px solid #D42F2F;
+      color: #D42F2F;
+    }
+
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    .row > div {
+      flex: 1;
+      min-width: 140px;
+    }
+
+    label {
+      font-weight: bold;
+      display: block;
+      margin-top: 8px;
+      margin-bottom: 4px;
+      color: #333;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      box-sizing: border-box;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 15px;
+    }
+
+    button {
+      margin-top: 20px;
+      width: 100%;
+      padding: 12px;
+      background: #D42F2F;
+      color: white;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background: #b52828;
+    }
+
+    .results-box {
+      margin-top: 20px;
+      background: #ffeaea;
+      padding: 20px;
+      border-radius: 8px;
+      font-size: 16px;
+      color: #222;
+      border-left: 4px solid #D42F2F;
+    }
+
+    .result-group {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .result-number {
+      font-size: 28px;
+      font-weight: bold;
+      color: #D42F2F;
+      line-height: 1.2;
+    }
+
+    .result-label {
+      font-size: 14px;
+      color: #555;
+      margin-top: 5px;
+    }
+
+    .result-extra {
+      font-size: 16px;
+      margin-bottom: 8px;
+    }
+
+    .footnote {
+      font-size: 13px;
+      color: #666;
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    .section {
+      margin-bottom: 30px;
+      background: #f9fafc;
+      padding: 15px 20px;
+      border-radius: 10px;
+      border: 1px solid #e0e6ed;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Cavity Wall Insulation Calculator</h2>
+
+    <div class="section">
+      <div class="row">
+        <div>
+          <label for="wallLength">Wall Length (m)</label>
+          <input type="number" id="wallLength" step="0.01">
+        </div>
+        <div>
+          <label for="wallHeight">Wall Height (m)</label>
+          <input type="number" id="wallHeight" step="0.01">
+        </div>
+      </div>
+
+      <div class="row">
+        <div>
+          <label for="cavityWidth">Cavity Width (mm)</label>
+          <input type="number" id="cavityWidth">
+        </div>
+        <div>
+          <label for="insulationType">Insulation Type</label>
+          <select id="insulationType">
+            <option value="pir">PIR Board (1200 x 600mm)</option>
+            <option value="wool">Mineral Wool (bags)</option>
+            <option value="beads">Polystyrene Beads (loose fill)</option>
+          </select>
+        </div>
+      </div>
+
+      <button onclick="calculateInsulation()">Calculate</button>
+      <div id="result" class="results-box" style="display: none;"></div>
+    </div>
+
+    <div class="footnote">
+      This is an estimation only and includes a 10% allowance for wastage.
+    </div>
+
+  <script>
+    function calculateInsulation() {
+      const length = parseFloat(document.getElementById("wallLength").value);
+      const height = parseFloat(document.getElementById("wallHeight").value);
+      const cavityWidth = parseFloat(document.getElementById("cavityWidth").value);
+      const type = document.getElementById("insulationType").value;
+      const result = document.getElementById("result");
+
+      if (isNaN(length) || isNaN(height) || isNaN(cavityWidth) || length <= 0 || height <= 0 || cavityWidth <= 0) {
+        result.innerHTML = "<strong>Please enter valid wall dimensions and cavity width.</strong>";
+        result.style.display = "block";
+        sendHeight();
+        return;
+      }
+
+      const area = length * height;
+      const cavityDepth = cavityWidth / 1000; // mm to m
+      const volume = area * cavityDepth;
+      const volumeWithWastage = volume * 1.1;
+
+      let materialOutput = "";
+
+      if (type === "pir") {
+        const boardArea = 1.2 * 0.6;
+        const boards = Math.ceil((area / boardArea) * 1.1);
+        materialOutput = `PIR Boards Needed: <strong>${boards}</strong> (1.2m x 0.6m)`;
+      } else if (type === "wool") {
+        const bagCoverage = 0.08; // average 80L (0.08 m³) bag
+        const bags = Math.ceil(volumeWithWastage / bagCoverage);
+        materialOutput = `Mineral Wool Bags Needed: <strong>${bags}</strong> (based on 80L bags)`;
+      } else {
+        const beadDensity = 1.0; // assume 1m³ = 1 bag of loose beads
+        const beadBags = Math.ceil(volumeWithWastage / beadDensity);
+        materialOutput = `Polystyrene Bead Bags Needed: <strong>${beadBags}</strong>`;
+      }
+
+      result.innerHTML = `
+        <div class="result-group">
+          <div class="result-number">${area.toFixed(2)} m²</div>
+          <div class="result-label">Wall Area</div>
+        </div>
+        <div class="result-group">
+          <div class="result-number">${volumeWithWastage.toFixed(2)} m³</div>
+          <div class="result-label">Cavity Volume (inc. 10% wastage)</div>
+        </div>
+        <div class="result-extra">${materialOutput}</div>
+      `;
+      result.style.display = "block";
+      sendHeight();
+    }
+
+    function sendHeight() {
+      const height = document.body.scrollHeight;
+      parent.postMessage(height, "*");
+    }
+
+    window.onload = () => {
+      sendHeight();
+      setTimeout(sendHeight, 500);
+    };
+
+    window.addEventListener("resize", sendHeight);
+  </script>
+</body>
+</html>
