@@ -48,7 +48,7 @@
       color: #333;
     }
 
-    input {
+    input, select {
       width: 100%;
       padding: 10px;
       box-sizing: border-box;
@@ -140,8 +140,13 @@
 
       <div class="row">
         <div>
-          <label for="thickness">Insulation Thickness (mm)</label>
-          <input type="number" id="thickness" value="200">
+          <label for="thickness">Select Thickness</label>
+          <select id="thickness">
+            <option value="100">100mm (14.13 m² per roll)</option>
+            <option value="150">150mm (9.34 m² per roll)</option>
+            <option value="170">170mm (8.15 m² per roll)</option>
+            <option value="200">200mm (6.03 m² per roll)</option>
+          </select>
         </div>
       </div>
 
@@ -160,21 +165,27 @@
     function calculateLoft() {
       const length = parseFloat(document.getElementById("length").value);
       const width = parseFloat(document.getElementById("width").value);
-      const thickness = parseFloat(document.getElementById("thickness").value);
+      const thickness = document.getElementById("thickness").value;
       const result = document.getElementById("result");
 
-      if (isNaN(length) || isNaN(width) || isNaN(thickness) || length <= 0 || width <= 0 || thickness <= 0) {
-        result.innerHTML = "<strong>Please enter valid loft dimensions and thickness.</strong>";
+      if (isNaN(length) || isNaN(width) || length <= 0 || width <= 0) {
+        result.innerHTML = "<strong>Please enter valid loft dimensions.</strong>";
         result.style.display = "block";
         sendHeight();
         return;
       }
 
       const area = length * width;
-      const volume = area * (thickness / 1000); // m³
-      const rollWidth = 1.16; // 1160mm
-      const rollArea = rollWidth * length;
-      const rollsNeeded = Math.ceil((area * 1.1) / rollArea); // 10% wastage
+      const thicknessMM = parseInt(thickness);
+      const volume = area * (thicknessMM / 1000);
+
+      let coverage = 0;
+      if (thickness == "100") coverage = 14.13;
+      else if (thickness == "150") coverage = 9.34;
+      else if (thickness == "170") coverage = 8.15;
+      else if (thickness == "200") coverage = 6.03;
+
+      const rolls = Math.ceil((area * 1.1) / coverage);
 
       result.innerHTML = `
         <div class="result-group">
@@ -185,7 +196,8 @@
           <div class="result-number">${volume.toFixed(2)} m³</div>
           <div class="result-label">Insulation Volume</div>
         </div>
-        <div class="result-extra">Rolls Required (1160mm wide): <strong>${rollsNeeded}</strong></div>
+        <div class="result-extra">Rolls Required (${thickness}mm): <strong>${rolls}</strong><br>
+        <small>Includes 10% wastage allowance.</small></div>
       `;
       result.style.display = "block";
       sendHeight();
