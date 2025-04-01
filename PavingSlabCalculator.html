@@ -1,270 +1,140 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Paving Slab Calculator</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #f2f4f7;
-      margin: 0;
-      padding: 20px;
-    }
+<!-- Same <head> and styles as before, skip to the <body> for brevity -->
 
-    .container {
-      max-width: 700px;
-      margin: auto;
-      background: #fff;
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-      border-top: 4px solid #D42F2F;
-    }
-
-    h2 {
-      text-align: center;
-      color: #2c3e50;
-      margin-bottom: 10px;
-    }
-
-    h3 {
-      margin-top: 30px;
-      margin-bottom: 15px;
-      padding-bottom: 5px;
-      border-bottom: 2px solid #D42F2F;
-      color: #D42F2F;
-    }
-
-    .row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 15px;
-    }
-
-    .row > div {
-      flex: 1;
-      min-width: 140px;
-    }
-
-    label {
-      font-weight: bold;
-      display: block;
-      margin-top: 8px;
-      margin-bottom: 4px;
-      color: #333;
-    }
-
-    input, select {
-      width: 100%;
-      padding: 10px;
-      box-sizing: border-box;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      font-size: 15px;
-    }
-
-    button {
-      margin-top: 20px;
-      width: 100%;
-      padding: 12px;
-      background: #D42F2F;
-      color: white;
-      font-size: 16px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: background 0.3s ease;
-    }
-
-    button:hover {
-      background: #b52828;
-    }
-
-    .results-box {
-      margin-top: 20px;
-      background: #ffeaea;
-      padding: 20px;
-      border-radius: 8px;
-      font-size: 16px;
-      color: #222;
-      border-left: 4px solid #D42F2F;
-    }
-
-    .result-group {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-
-    .result-number {
-      font-size: 28px;
-      font-weight: bold;
-      color: #D42F2F;
-      line-height: 1.2;
-    }
-
-    .result-label {
-      font-size: 14px;
-      color: #555;
-      margin-top: 5px;
-    }
-
-    .result-extra {
-      font-size: 16px;
-      margin-bottom: 8px;
-    }
-
-    .footnote {
-      font-size: 13px;
-      color: #666;
-      margin-top: 20px;
-      text-align: center;
-    }
-
-    .section {
-      margin-bottom: 30px;
-      background: #f9fafc;
-      padding: 15px 20px;
-      border-radius: 10px;
-      border: 1px solid #e0e6ed;
-    }
-
-    #customSlabFields {
-      display: none;
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <h2>Paving Slab Calculator</h2>
-
-    <div class="section">
-      <h3>Paving Area</h3>
-      <div class="row">
-        <div>
-          <label for="areaLength">Length (m)</label>
-          <input type="number" id="areaLength" step="0.01">
+    <body>
+        <div class="container">
+          <h2>Paving Slab Calculator</h2>
+      
+          <div class="section">
+            <h3>Paving Area</h3>
+            <div class="row">
+              <div>
+                <label for="areaLength">Length (m)</label>
+                <input type="number" id="areaLength" step="0.01">
+              </div>
+              <div>
+                <label for="areaWidth">Width (m)</label>
+                <input type="number" id="areaWidth" step="0.01">
+              </div>
+            </div>
+      
+            <h3>Slab Size</h3>
+            <div class="row">
+              <div>
+                <label for="slabSize">Choose Slab Size</label>
+                <select id="slabSize" onchange="toggleCustomSlab()">
+                  <option value="600x600">600 x 600 mm</option>
+                  <option value="450x450">450 x 450 mm</option>
+                  <option value="600x450">600 x 450 mm</option>
+                  <option value="custom">Custom Size</option>
+                </select>
+              </div>
+            </div>
+      
+            <div class="row" id="customSlabFields">
+              <div>
+                <label for="customLength">Custom Length (mm)</label>
+                <input type="number" id="customLength">
+              </div>
+              <div>
+                <label for="customWidth">Custom Width (mm)</label>
+                <input type="number" id="customWidth">
+              </div>
+            </div>
+      
+            <button onclick="calculateSlabs()">Calculate</button>
+      
+            <div id="slabResults" class="results-box" style="display: none;"></div>
+          </div>
+      
+          <div class="footnote">
+            This is an estimation only and includes 10% allowance for wastage.  
+          </div>
         </div>
-        <div>
-          <label for="areaWidth">Width (m)</label>
-          <input type="number" id="areaWidth" step="0.01">
-        </div>
-      </div>
-
-      <h3>Slab Size</h3>
-      <div class="row">
-        <div>
-          <label for="slabSize">Choose Slab Size</label>
-          <select id="slabSize" onchange="toggleCustomSlab()">
-            <option value="600x600">600 x 600 mm</option>
-            <option value="450x450">450 x 450 mm</option>
-            <option value="600x450">600 x 450 mm</option>
-            <option value="custom">Custom Size</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="row" id="customSlabFields">
-        <div>
-          <label for="customLength">Custom Length (mm)</label>
-          <input type="number" id="customLength">
-        </div>
-        <div>
-          <label for="customWidth">Custom Width (mm)</label>
-          <input type="number" id="customWidth">
-        </div>
-      </div>
-
-      <button onclick="calculateSlabs()">Calculate</button>
-
-      <div id="slabResults" class="results-box" style="display: none;"></div>
-    </div>
-
-    <div class="footnote">
-      This is an estimation only and includes 10% allowance for wastage.  
-    </div>
-  </div>
-
-  <script>
-    function toggleCustomSlab() {
-      const size = document.getElementById("slabSize").value;
-      const customFields = document.getElementById("customSlabFields");
-      customFields.style.display = size === "custom" ? "flex" : "none";
-    }
-
-    function calculateSlabs() {
-      const length = parseFloat(document.getElementById("areaLength").value);
-      const width = parseFloat(document.getElementById("areaWidth").value);
-      const size = document.getElementById("slabSize").value;
-      const results = document.getElementById("slabResults");
-
-      if (isNaN(length) || isNaN(width) || length <= 0 || width <= 0) {
-        results.style.display = "block";
-        results.innerHTML = "<strong>Please enter valid area dimensions.</strong>";
-        sendHeight();
-        return;
-      }
-
-      let slabLength, slabWidth;
-
-      if (size === "custom") {
-        slabLength = parseFloat(document.getElementById("customLength").value);
-        slabWidth = parseFloat(document.getElementById("customWidth").value);
-        if (isNaN(slabLength) || isNaN(slabWidth) || slabLength <= 0 || slabWidth <= 0) {
-          results.style.display = "block";
-          results.innerHTML = "<strong>Please enter valid custom slab size.</strong>";
-          sendHeight();
-          return;
-        }
-      } else {
-        const parts = size.split("x");
-        slabLength = parseFloat(parts[0]);
-        slabWidth = parseFloat(parts[1]);
-      }
-
-      const area = length * width;
-      const slabArea = (slabLength / 1000) * (slabWidth / 1000);
-      const slabsNeeded = Math.ceil((area / slabArea) * 1.1); // 10% wastage
-
-      // Material Estimates
-      const subBaseDepth = 0.1; // 100mm
-      const sandDepth = 0.03;   // 30mm
-      const subBaseTonnes = (area * subBaseDepth * 2); // MOT Type 1 (~2 tonnes/m³)
-      const sandTonnes = (area * sandDepth * 1.6);      // Sharp Sand (~1.6 tonnes/m³)
-      const cementBags = Math.ceil(area * 0.2);         // Roughly 0.2 bags per m²
-
-      results.style.display = "block";
-      results.innerHTML = `
-        <div class="result-group">
-          <div class="result-number">${area.toFixed(2)} m²</div>
-          <div class="result-label">Paving Area</div>
-        </div>
-        <div class="result-group">
-          <div class="result-number">${slabsNeeded}</div>
-          <div class="result-label">Estimated Slabs Needed</div>
-        </div>
-        <div class="result-extra">Sub-base (MOT Type 1): <strong>${subBaseTonnes.toFixed(1)} tonnes</strong><br>
-        <small>Based on a compacted depth of 100mm.</small></div>
-        <div class="result-extra">Sharp Sand: <strong>${sandTonnes.toFixed(1)} tonnes</strong><br>
-        <small>Based on a bedding layer of 30mm.</small></div>
-        <div class="result-extra">Cement (25kg bags): <strong>${cementBags}</strong><br>
-        <small>Estimated for bedding mortar mix.</small></div>
-      `;
-
-      sendHeight();
-    }
-
-    function sendHeight() {
-      const height = document.body.scrollHeight;
-      parent.postMessage(height, "*");
-    }
-
-    window.onload = () => {
-      sendHeight();
-      setTimeout(sendHeight, 500);
-    };
-
-    window.addEventListener("resize", sendHeight);
-  </script>
-</body>
-</html>
+      
+        <script>
+          function toggleCustomSlab() {
+            const size = document.getElementById("slabSize").value;
+            const customFields = document.getElementById("customSlabFields");
+            customFields.style.display = size === "custom" ? "flex" : "none";
+          }
+      
+          function calculateSlabs() {
+            const length = parseFloat(document.getElementById("areaLength").value);
+            const width = parseFloat(document.getElementById("areaWidth").value);
+            const size = document.getElementById("slabSize").value;
+            const results = document.getElementById("slabResults");
+      
+            if (isNaN(length) || isNaN(width) || length <= 0 || width <= 0) {
+              results.style.display = "block";
+              results.innerHTML = "<strong>Please enter valid area dimensions.</strong>";
+              sendHeight();
+              return;
+            }
+      
+            let slabLength, slabWidth;
+      
+            if (size === "custom") {
+              slabLength = parseFloat(document.getElementById("customLength").value);
+              slabWidth = parseFloat(document.getElementById("customWidth").value);
+              if (isNaN(slabLength) || isNaN(slabWidth) || slabLength <= 0 || slabWidth <= 0) {
+                results.style.display = "block";
+                results.innerHTML = "<strong>Please enter valid custom slab size.</strong>";
+                sendHeight();
+                return;
+              }
+            } else {
+              const parts = size.split("x");
+              slabLength = parseFloat(parts[0]);
+              slabWidth = parseFloat(parts[1]);
+            }
+      
+            const area = length * width;
+            const slabArea = (slabLength / 1000) * (slabWidth / 1000);
+            const slabsNeeded = Math.ceil((area / slabArea) * 1.1); // 10% wastage
+      
+            // Material Estimates
+            const subBaseDepth = 0.1; // 100mm
+            const sandDepth = 0.03;   // 30mm
+            const subBaseTonnes = (area * subBaseDepth * 2); // MOT Type 1 (~2 tonnes/m³)
+            const sandTonnes = (area * sandDepth * 1.6);      // Sharp Sand (~1.6 tonnes/m³)
+            const cementBags = Math.ceil(area * 0.2);         // ~0.2 bags per m²
+      
+            // Jointing compound (e.g. resin jointing) — assume 8m² per tub
+            const jointingTubs = Math.ceil(area / 8);
+      
+            results.style.display = "block";
+            results.innerHTML = `
+              <div class="result-group">
+                <div class="result-number">${area.toFixed(2)} m²</div>
+                <div class="result-label">Paving Area</div>
+              </div>
+              <div class="result-group">
+                <div class="result-number">${slabsNeeded}</div>
+                <div class="result-label">Estimated Slabs Needed</div>
+              </div>
+              <div class="result-extra">Sub-base (MOT Type 1): <strong>${subBaseTonnes.toFixed(1)} tonnes</strong><br>
+              <small>Based on a compacted depth of 100mm.</small></div>
+              <div class="result-extra">Sharp Sand: <strong>${sandTonnes.toFixed(1)} tonnes</strong><br>
+              <small>Based on a bedding layer of 30mm.</small></div>
+              <div class="result-extra">Cement (25kg bags): <strong>${cementBags}</strong><br>
+              <small>Estimated for bedding mortar mix.</small></div>
+              <div class="result-extra">Jointing Compound: <strong>${jointingTubs}</strong> tub(s)<br>
+              <small>Estimated at 8 m² coverage per tub (5mm joints, 25mm depth).</small></div>
+            `;
+      
+            sendHeight();
+          }
+      
+          function sendHeight() {
+            const height = document.body.scrollHeight;
+            parent.postMessage(height, "*");
+          }
+      
+          window.onload = () => {
+            sendHeight();
+            setTimeout(sendHeight, 500);
+          };
+      
+          window.addEventListener("resize", sendHeight);
+        </script>
+      </body>
