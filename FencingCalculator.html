@@ -187,6 +187,7 @@
     if (isNaN(totalLength) || isNaN(panelWidth) || panelWidth <= 0 || totalLength <= 0 || (includeGate && isNaN(gateWidth))) {
       results.innerHTML = '<strong>Please enter valid dimensions.</strong>';
       results.style.display = "block";
+sendHeight();
       return;
     }
 
@@ -203,6 +204,17 @@
     `;
     results.style.display = "block";
   }
+function sendHeight() {
+  const height = document.body.scrollHeight;
+  parent.postMessage(height, '*');
+}
+
+window.onload = () => {
+  sendHeight();
+  setTimeout(sendHeight, 500);
+};
+
+window.addEventListener("resize", sendHeight);
 </script>
 </body>
 </html>
