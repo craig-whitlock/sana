@@ -81,8 +81,8 @@
       background: #b52828;
     }
 
-    #results {
-      margin-top: 25px;
+    .results-box {
+      margin-top: 20px;
       background: #ffeaea;
       padding: 20px;
       border-radius: 8px;
@@ -129,25 +129,6 @@
       border-radius: 10px;
       border: 1px solid #e0e6ed;
     }
-
-    #mobilePrompt {
-      background: #fff4f4;
-      color: #D42F2F;
-      font-weight: bold;
-      text-align: center;
-      padding: 12px;
-      margin-top: 15px;
-      border-radius: 6px;
-      font-size: 16px;
-      border: 2px dashed #D42F2F;
-      display: none;
-      animation: fadeIn 0.5s ease-in-out;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
   </style>
 </head>
 <body>
@@ -179,6 +160,8 @@
       </div>
 
       <button onclick="calculateStandard()">Calculate Standard</button>
+
+      <div id="resultsStandard" class="results-box" style="display: none;"></div>
     </div>
 
     <!-- Custom Size Calculator -->
@@ -211,50 +194,25 @@
       </div>
 
       <button onclick="calculateCustom()">Calculate Custom</button>
+
+      <div id="resultsCustom" class="results-box" style="display: none;"></div>
     </div>
 
-    <div id="mobilePrompt"></div>
-    <div id="results"></div>
     <div class="footnote">
       This is an estimation only and includes a 5% allowance for wastage.
     </div>
   </div>
 
   <script>
-    function scrollToResults() {
-      const results = document.getElementById("results");
-      results.scrollIntoView({ behavior: "smooth" });
-    }
-
-    function notifyParentScroll() {
-      parent.postMessage("scrollToIframe", "*");
-    }
-
-    function showMobilePrompt() {
-      const isMobile = window.innerWidth <= 768;
-      const prompt = document.getElementById("mobilePrompt");
-
-      if (isMobile && prompt) {
-        prompt.textContent = "⬇️ See your results below";
-        prompt.style.display = "block";
-
-        setTimeout(() => {
-          prompt.style.display = "none";
-        }, 5000);
-      }
-    }
-
     function calculateStandard() {
       const length = parseFloat(document.getElementById('stdLength').value);
       const height = parseFloat(document.getElementById('stdHeight').value);
       const type = document.getElementById('stdType').value;
-      const results = document.getElementById('results');
+      const results = document.getElementById('resultsStandard');
 
       if (isNaN(length) || isNaN(height) || length <= 0 || height <= 0) {
+        results.style.display = "block";
         results.innerHTML = "<strong>Please enter valid wall dimensions.</strong>";
-        scrollToResults();
-        showMobilePrompt();
-        notifyParentScroll();
         return;
       }
 
@@ -276,6 +234,7 @@
       const cementBags = Math.ceil(wallArea * 0.3);
       const sandBags = Math.ceil(wallArea * 1.2);
 
+      results.style.display = "block";
       results.innerHTML = `
         <div class="result-group">
           <div class="result-number">${wallArea.toFixed(2)} m²</div>
@@ -289,11 +248,6 @@
         <div class="result-extra">Estimated 25kg Cement Bags: <strong>${cementBags}</strong></div>
         <div class="result-extra">Estimated 25kg Sand Bags: <strong>${sandBags}</strong></div>
       `;
-
-      sendHeight();
-      scrollToResults();
-      showMobilePrompt();
-      notifyParentScroll();
     }
 
     function calculateCustom() {
@@ -302,17 +256,15 @@
       const unitWidthMM = parseFloat(document.getElementById('unitWidth').value);
       const unitHeightMM = parseFloat(document.getElementById('unitHeight').value);
       const jointSizeMM = parseFloat(document.getElementById('jointSize').value);
-      const results = document.getElementById('results');
+      const results = document.getElementById('resultsCustom');
 
       if (
         isNaN(length) || isNaN(height) || length <= 0 || height <= 0 ||
         isNaN(unitWidthMM) || isNaN(unitHeightMM) || isNaN(jointSizeMM) ||
         unitWidthMM <= 0 || unitHeightMM <= 0 || jointSizeMM < 0
       ) {
+        results.style.display = "block";
         results.innerHTML = "<strong>Please enter valid inputs for the custom calculator.</strong>";
-        scrollToResults();
-        showMobilePrompt();
-        notifyParentScroll();
         return;
       }
 
@@ -324,6 +276,7 @@
       const cementBags = Math.ceil(wallArea * 0.3);
       const sandBags = Math.ceil(wallArea * 1.2);
 
+      results.style.display = "block";
       results.innerHTML = `
         <div class="result-group">
           <div class="result-number">${wallArea.toFixed(2)} m²</div>
@@ -337,24 +290,7 @@
         <div class="result-extra">Estimated 25kg Cement Bags: <strong>${cementBags}</strong></div>
         <div class="result-extra">Estimated 25kg Sand Bags: <strong>${sandBags}</strong></div>
       `;
-
-      sendHeight();
-      scrollToResults();
-      showMobilePrompt();
-      notifyParentScroll();
     }
-
-    function sendHeight() {
-      const height = document.body.scrollHeight;
-      parent.postMessage(height, "*");
-    }
-
-    window.onload = () => {
-      sendHeight();
-      setTimeout(sendHeight, 500);
-    };
-
-    window.addEventListener("resize", sendHeight);
   </script>
 </body>
 </html>
