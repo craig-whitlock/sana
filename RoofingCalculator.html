@@ -47,6 +47,15 @@
       margin-bottom: 15px;
     }
 
+    .checkbox-row label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: normal;
+      margin: 0;
+      color: #333;
+    }
+
     label {
       font-weight: bold;
       display: block;
@@ -137,18 +146,9 @@
   </div>
 
   <div class="checkbox-row">
-    <div>
-      <input type="checkbox" id="overhang">
-      <label for="overhang">Include Overhang (+0.3m each side)</label>
-    </div>
-    <div>
-      <input type="checkbox" id="doubleSided">
-      <label for="doubleSided">Up & Over (Double-sided roof)</label>
-    </div>
-    <div>
-      <input type="checkbox" id="includeRidge" onchange="toggleRidge()">
-      <label for="includeRidge">Include Ridge Tiles</label>
-    </div>
+    <label><input type="checkbox" id="overhang"> Include Overhang (+0.3m each side)</label>
+    <label><input type="checkbox" id="doubleSided"> Up & Over (Double-sided roof)</label>
+    <label><input type="checkbox" id="includeRidge" onchange="toggleRidge()"> Include Ridge Tiles</label>
   </div>
 
   <div class="row" id="ridgeInput" style="display:none">
