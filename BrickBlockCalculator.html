@@ -1,3 +1,4 @@
+<!-- Full file: brick-block-calculator.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -91,12 +92,24 @@
       border-left: 4px solid #D42F2F;
     }
 
+    #results strong.highlight {
+      color: #D42F2F;
+      font-size: 18px;
+    }
+
     .section {
       margin-bottom: 30px;
       background: #f9fafc;
       padding: 15px 20px;
       border-radius: 10px;
       border: 1px solid #e0e6ed;
+    }
+
+    .footnote {
+      font-size: 13px;
+      color: #666;
+      margin-top: 20px;
+      text-align: center;
     }
   </style>
 </head>
@@ -164,6 +177,9 @@
     </div>
 
     <div id="results"></div>
+    <div class="footnote">
+      This is an estimation only and includes a 5% allowance for wastage.
+    </div>
   </div>
 
   <script>
@@ -193,11 +209,15 @@
 
       const unitArea = unitWidth * unitHeight;
       const unitsNeeded = Math.ceil((wallArea / unitArea) * 1.05);
+      const cementBags = Math.ceil(wallArea * 0.3);
+      const sandBags = Math.ceil(wallArea * 1.2);
 
       results.innerHTML = `
         <strong>${label}</strong><br>
-        Wall Area: ${wallArea.toFixed(2)} m²<br>
-        Estimated Units Needed: <strong>${unitsNeeded}</strong>
+        Wall Area: <strong class="highlight">${wallArea.toFixed(2)} m²</strong><br>
+        Estimated Units Needed: <strong class="highlight">${unitsNeeded}</strong><br>
+        Estimated 25kg Cement Bags: <strong>${cementBags}</strong><br>
+        Estimated 25kg Sand Bags: <strong>${sandBags}</strong>
       `;
     }
 
@@ -222,14 +242,16 @@
       const totalUnitWidth = (unitWidthMM + jointSizeMM) / 1000;
       const totalUnitHeight = (unitHeightMM + jointSizeMM) / 1000;
       const unitArea = totalUnitWidth * totalUnitHeight;
-
       const unitsNeeded = Math.ceil((wallArea / unitArea) * 1.05);
+      const cementBags = Math.ceil(wallArea * 0.3);
+      const sandBags = Math.ceil(wallArea * 1.2);
 
       results.innerHTML = `
         <strong>Custom Unit</strong><br>
-        Wall Area: ${wallArea.toFixed(2)} m²<br>
-        Unit + Joint Size: ${totalUnitWidth.toFixed(3)}m x ${totalUnitHeight.toFixed(3)}m<br>
-        Estimated Units Needed: <strong>${unitsNeeded}</strong>
+        Wall Area: <strong class="highlight">${wallArea.toFixed(2)} m²</strong><br>
+        Estimated Units Needed: <strong class="highlight">${unitsNeeded}</strong><br>
+        Estimated 25kg Cement Bags: <strong>${cementBags}</strong><br>
+        Estimated 25kg Sand Bags: <strong>${sandBags}</strong>
       `;
     }
   </script>
