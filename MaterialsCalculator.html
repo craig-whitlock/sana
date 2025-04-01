@@ -11,7 +11,7 @@
       padding: 20px;
     }
     .calculator-container {
-      max-width: 550px;
+      max-width: 600px;
       margin: auto;
       background: #fff;
       padding: 30px;
@@ -54,6 +54,12 @@
     }
     .hidden {
       display: none;
+    }
+    canvas {
+      margin-top: 20px;
+      border: 1px solid #ccc;
+      width: 100%;
+      height: auto;
     }
   </style>
 </head>
@@ -112,6 +118,7 @@
     <button onclick="calculateMaterials()">Calculate</button>
 
     <div id="result"></div>
+    <canvas id="slabCanvas" class="hidden" width="500" height="400"></canvas>
   </div>
 
   <script>
@@ -120,6 +127,7 @@
       document.getElementById('brickOptions').style.display = material === 'brick' ? 'block' : 'none';
       document.getElementById('wallTypeSection').style.display = material === 'slab' ? 'none' : 'block';
       document.getElementById('slabOptions').classList.toggle('hidden', material !== 'slab');
+      document.getElementById('slabCanvas').classList.add('hidden');
     }
 
     function toggleCustomSlabInputs() {
@@ -135,6 +143,9 @@
       const brickHeight = parseFloat(document.getElementById('brickHeight').value);
       const slabSize = document.getElementById('slabSize')?.value;
       const resultBox = document.getElementById('result');
+      const canvas = document.getElementById('slabCanvas');
+      const ctx = canvas.getContext('2d');
+      canvas.classList.add('hidden'); // Hide canvas until needed
 
       if (isNaN(length) || isNaN(height) || length <= 0 || height <= 0) {
         resultBox.innerHTML = "<strong>Please enter valid wall or surface dimensions.</strong>";
@@ -194,9 +205,29 @@
         ${materialType !== 'slab' ? '25kg Cement Bags: <strong>' + cementBags + '</strong><br>' : ''}
         ${materialType !== 'slab' ? '25kg Sand Bags: <strong>' + sandBags + '</strong>' : ''}
       `;
+
+      // Draw slab layout if applicable
+      if (materialType === 'slab') {
+        canvas.classList.remove('hidden');
+        const cols = Math.floor(length / unitWidth);
+        const rows = Math.floor(height / unitHeight);
+        const padding = 5;
+        const maxWidth = canvas.width - padding * 2;
+        const maxHeight = canvas.height - padding * 2;
+        const scaleX = maxWidth / cols;
+        const scaleY = maxHeight / rows;
+        const slabWidth = Math.min(scaleX, scaleY);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        for (let r = 0; r < rows; r++) {
+          for (let c = 0; c < cols; c++) {
+            ctx.strokeStyle = "#666";
+            ctx.strokeRect(padding + c * slabWidth, padding + r * slabWidth, slabWidth - 2, slabWidth - 2);
+          }
+        }
+      }
     }
 
-    // Init UI
     updateUI();
   </script>
 </body>
