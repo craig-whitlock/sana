@@ -91,9 +91,35 @@
       border-left: 4px solid #D42F2F;
     }
 
-    #results strong.highlight {
+    .result-group {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .result-number {
+      font-size: 28px;
+      font-weight: bold;
       color: #D42F2F;
-      font-size: 18px;
+      line-height: 1.2;
+    }
+
+    .result-label {
+      font-size: 14px;
+      color: #555;
+      margin-top: 5px;
+    }
+
+    .result-extra {
+      font-size: 16px;
+      text-align: center;
+      margin-bottom: 6px;
+    }
+
+    .footnote {
+      font-size: 13px;
+      color: #666;
+      margin-top: 20px;
+      text-align: center;
     }
 
     .section {
@@ -102,13 +128,6 @@
       padding: 15px 20px;
       border-radius: 10px;
       border: 1px solid #e0e6ed;
-    }
-
-    .footnote {
-      font-size: 13px;
-      color: #666;
-      margin-top: 20px;
-      text-align: center;
     }
   </style>
 </head>
@@ -197,12 +216,12 @@
       let unitWidth, unitHeight, label;
 
       if (type === 'brick') {
-        unitWidth = (215 + 10) / 1000;  // 225mm with joint
-        unitHeight = (65 + 10) / 1000;  // 75mm with joint
+        unitWidth = (215 + 10) / 1000;
+        unitHeight = (65 + 10) / 1000;
         label = "Standard House Bricks (incl. 10mm joint)";
       } else {
-        unitWidth = (440 + 10) / 1000;  // 450mm with joint
-        unitHeight = (215 + 10) / 1000; // 225mm with joint
+        unitWidth = (440 + 10) / 1000;
+        unitHeight = (215 + 10) / 1000;
         label = "Standard Blocks (incl. 10mm joint)";
       }
 
@@ -212,11 +231,17 @@
       const sandBags = Math.ceil(wallArea * 1.2);
 
       results.innerHTML = `
-        <strong>${label}</strong><br>
-        Wall Area: <strong class="highlight">${wallArea.toFixed(2)} m²</strong><br>
-        Estimated Units Needed: <strong class="highlight">${unitsNeeded}</strong><br>
-        Estimated 25kg Cement Bags: <strong>${cementBags}</strong><br>
-        Estimated 25kg Sand Bags: <strong>${sandBags}</strong>
+        <div class="result-group">
+          <div class="result-number">${wallArea.toFixed(2)} m²</div>
+          <div class="result-label">Wall Area</div>
+        </div>
+        <div class="result-group">
+          <div class="result-number">${unitsNeeded}</div>
+          <div class="result-label">Estimated Units Needed</div>
+        </div>
+        <div class="result-extra"><strong>${label}</strong></div>
+        <div class="result-extra">Estimated 25kg Cement Bags: <strong>${cementBags}</strong></div>
+        <div class="result-extra">Estimated 25kg Sand Bags: <strong>${sandBags}</strong></div>
       `;
     }
 
@@ -246,11 +271,17 @@
       const sandBags = Math.ceil(wallArea * 1.2);
 
       results.innerHTML = `
-        <strong>Custom Unit</strong><br>
-        Wall Area: <strong class="highlight">${wallArea.toFixed(2)} m²</strong><br>
-        Estimated Units Needed: <strong class="highlight">${unitsNeeded}</strong><br>
-        Estimated 25kg Cement Bags: <strong>${cementBags}</strong><br>
-        Estimated 25kg Sand Bags: <strong>${sandBags}</strong>
+        <div class="result-group">
+          <div class="result-number">${wallArea.toFixed(2)} m²</div>
+          <div class="result-label">Wall Area</div>
+        </div>
+        <div class="result-group">
+          <div class="result-number">${unitsNeeded}</div>
+          <div class="result-label">Estimated Units Needed</div>
+        </div>
+        <div class="result-extra"><strong>Custom Unit</strong></div>
+        <div class="result-extra">Estimated 25kg Cement Bags: <strong>${cementBags}</strong></div>
+        <div class="result-extra">Estimated 25kg Sand Bags: <strong>${sandBags}</strong></div>
       `;
     }
   </script>
