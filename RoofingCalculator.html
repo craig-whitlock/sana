@@ -135,9 +135,9 @@
   <div class="checkbox-row">
     <label><input type="checkbox" id="overhang"> Include Overhang (+0.3m each side)</label>
     <label><input type="checkbox" id="doubleSided"> Up & Over (Double-sided roof)</label>
-    <label><input type="checkbox" id="includeRidge" onchange="toggleExtra('ridgeInput')"> Include Ridge Tiles</label>
-    <label><input type="checkbox" id="includeHip" onchange="toggleExtra('hipInput')"> Include Hip Tiles</label>
-    <label><input type="checkbox" id="includeValley" onchange="toggleExtra('valleyInput')"> Include Valley Liners</label>
+    <label><input type="checkbox" id="includeRidge" onchange="toggleInput('includeRidge', 'ridgeInput')"> Include Ridge Tiles</label>
+    <label><input type="checkbox" id="includeHip" onchange="toggleInput('includeHip', 'hipInput')"> Include Hip Tiles</label>
+    <label><input type="checkbox" id="includeValley" onchange="toggleInput('includeValley', 'valleyInput')"> Include Valley Liners</label>
   </div>
 
   <div class="row" id="ridgeInput" style="display:none">
@@ -171,8 +171,10 @@
 </div>
 
 <script>
-  function toggleExtra(id) {
-    document.getElementById(id).style.display = document.getElementById('include' + id.charAt(0).toUpperCase() + id.slice(1)).checked ? 'flex' : 'none';
+  function toggleInput(checkboxId, inputId) {
+    const checkbox = document.getElementById(checkboxId);
+    const input = document.getElementById(inputId);
+    input.style.display = checkbox.checked ? 'flex' : 'none';
     sendHeight();
   }
 
