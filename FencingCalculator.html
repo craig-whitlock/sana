@@ -136,7 +136,7 @@
 
   <div class="row" id="gateRow" style="display:none">
     <div>
-      <label for="gateWidth">Gate Width (m)</label>
+      <label for="gateWidth">Gate Width (mm)</label>
       <input type="number" id="gateWidth" step="0.01">
     </div>
   </div>
@@ -179,7 +179,7 @@
       panelWidth = parseFloat(panelWidth);
     }
     const includeGate = document.getElementById("includeGate").checked;
-    const gateWidth = includeGate ? parseFloat(document.getElementById("gateWidth").value) : 0;
+    const gateWidth = includeGate ? parseFloat(document.getElementById("gateWidth").value) / 1000 : 0;
     const postType = document.getElementById("postType").value;
 
     const results = document.getElementById("results");
