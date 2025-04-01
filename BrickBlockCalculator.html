@@ -129,6 +129,25 @@
       border-radius: 10px;
       border: 1px solid #e0e6ed;
     }
+
+    #mobilePrompt {
+      background: #fff4f4;
+      color: #D42F2F;
+      font-weight: bold;
+      text-align: center;
+      padding: 12px;
+      margin-top: 15px;
+      border-radius: 6px;
+      font-size: 16px;
+      border: 2px dashed #D42F2F;
+      display: none;
+      animation: fadeIn 0.5s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
   </style>
 </head>
 <body>
@@ -194,6 +213,7 @@
       <button onclick="calculateCustom()">Calculate Custom</button>
     </div>
 
+    <div id="mobilePrompt"></div>
     <div id="results"></div>
     <div class="footnote">
       This is an estimation only and includes a 5% allowance for wastage.
@@ -210,6 +230,20 @@
       parent.postMessage("scrollToIframe", "*");
     }
 
+    function showMobilePrompt() {
+      const isMobile = window.innerWidth <= 768;
+      const prompt = document.getElementById("mobilePrompt");
+
+      if (isMobile && prompt) {
+        prompt.textContent = "⬇️ See your results below";
+        prompt.style.display = "block";
+
+        setTimeout(() => {
+          prompt.style.display = "none";
+        }, 5000);
+      }
+    }
+
     function calculateStandard() {
       const length = parseFloat(document.getElementById('stdLength').value);
       const height = parseFloat(document.getElementById('stdHeight').value);
@@ -219,6 +253,7 @@
       if (isNaN(length) || isNaN(height) || length <= 0 || height <= 0) {
         results.innerHTML = "<strong>Please enter valid wall dimensions.</strong>";
         scrollToResults();
+        showMobilePrompt();
         notifyParentScroll();
         return;
       }
@@ -257,6 +292,7 @@
 
       sendHeight();
       scrollToResults();
+      showMobilePrompt();
       notifyParentScroll();
     }
 
@@ -275,6 +311,7 @@
       ) {
         results.innerHTML = "<strong>Please enter valid inputs for the custom calculator.</strong>";
         scrollToResults();
+        showMobilePrompt();
         notifyParentScroll();
         return;
       }
@@ -303,6 +340,7 @@
 
       sendHeight();
       scrollToResults();
+      showMobilePrompt();
       notifyParentScroll();
     }
 
