@@ -186,9 +186,9 @@
     const adjustedHeight = height + overhang;
     const roofArea = (adjustedWidth * adjustedHeight) * pitchFactor;
     const tilesNeeded = Math.ceil((roofArea * tileDensity) * 1.1);
-    const underlayRolls = Math.ceil(roofArea / 50); // assuming 50m2 roll
-    const battens = Math.ceil(adjustedHeight / 0.3) * adjustedWidth; // every 300mm
-    const ridgeTiles = includeRidge ? Math.ceil((ridgeLength / 0.5) * 1.1) : 0;
+    const underlayRolls = Math.ceil(roofArea / 50);
+    const battens = Math.ceil(adjustedHeight / 0.3) * adjustedWidth;
+    const ridgeTiles = includeRidge ? Math.ceil((ridgeLength / 0.3) * 1.1) : 0;
 
     results.innerHTML = `
       <div class="result-extra">Pitched Roof Area: <strong>${roofArea.toFixed(2)} m²</strong></div>
