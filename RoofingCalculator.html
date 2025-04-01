@@ -135,6 +135,13 @@
       <label for="overhang">Include Overhang (+0.3m each side)</label>
     </div>
     <div>
+      <input type="checkbox" id="doubleSided">
+      <label for="doubleSided">Up & Over (Double-sided roof)</label>
+    </div>
+  </div>
+
+  <div class="row">
+    <div>
       <input type="checkbox" id="includeRidge" onchange="toggleRidge()">
       <label for="includeRidge">Include Ridge Tiles</label>
     </div>
@@ -169,6 +176,7 @@
     const pitch = parseInt(document.getElementById('pitch').value);
     const tileDensity = parseFloat(document.getElementById('tileType').value);
     const overhang = document.getElementById('overhang').checked ? 0.6 : 0;
+    const doubleSided = document.getElementById('doubleSided').checked;
     const includeRidge = document.getElementById('includeRidge').checked;
     const ridgeLength = includeRidge ? parseFloat(document.getElementById('ridgeLength').value) : 0;
 
@@ -184,10 +192,12 @@
     const pitchFactor = pitch === 15 ? 1.04 : pitch === 30 ? 1.15 : 1.41;
     const adjustedWidth = width + overhang;
     const adjustedHeight = height + overhang;
-    const roofArea = (adjustedWidth * adjustedHeight) * pitchFactor;
+    let roofArea = (adjustedWidth * adjustedHeight) * pitchFactor;
+    if (doubleSided) roofArea *= 2;
+
     const tilesNeeded = Math.ceil((roofArea * tileDensity) * 1.1);
     const underlayRolls = Math.ceil(roofArea / 50);
-    const battens = Math.ceil(adjustedHeight / 0.3) * adjustedWidth;
+    const battens = Math.ceil(adjustedHeight / 0.3) * adjustedWidth * (doubleSided ? 2 : 1);
     const ridgeTiles = includeRidge ? Math.ceil((ridgeLength / 0.3) * 1.1) : 0;
 
     results.innerHTML = `
