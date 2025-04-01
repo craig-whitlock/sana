@@ -72,9 +72,18 @@
       font-size: 16px;
       color: #222;
       border-left: 4px solid #D42F2F;
+      text-align: center;
     }
-    .result-extra {
-      margin-bottom: 8px;
+    .result-number {
+      font-size: 32px;
+      font-weight: bold;
+      color: #D42F2F;
+      line-height: 1.2;
+    }
+    .result-label {
+      font-size: 14px;
+      color: #555;
+      margin-top: 5px;
     }
     .footnote {
       font-size: 13px;
@@ -144,9 +153,8 @@
     const bulkBags = Math.ceil(weight / 0.85);
 
     results.innerHTML = `
-      <div class="result-extra">Total Volume: <strong>${volume.toFixed(2)} m³</strong></div>
-      <div class="result-extra">Estimated Weight: <strong>${weight.toFixed(2)} tonnes</strong></div>
-      <div class="result-extra">Bulk Bags Required: <strong>${bulkBags}</strong></div>
+      <div class="result-number">${bulkBags}</div>
+      <div class="result-label">Bulk Bags Required</div>
     `;
     results.style.display = "block";
     sendHeight();
