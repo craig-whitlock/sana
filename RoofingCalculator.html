@@ -40,6 +40,13 @@
       min-width: 140px;
     }
 
+    .checkbox-row {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
     label {
       font-weight: bold;
       display: block;
@@ -47,7 +54,7 @@
       color: #333;
     }
 
-    input, select {
+    input[type="text"], input[type="number"], select {
       width: 100%;
       padding: 10px;
       box-sizing: border-box;
@@ -129,7 +136,7 @@
     </div>
   </div>
 
-  <div class="row">
+  <div class="checkbox-row">
     <div>
       <input type="checkbox" id="overhang">
       <label for="overhang">Include Overhang (+0.3m each side)</label>
@@ -138,9 +145,6 @@
       <input type="checkbox" id="doubleSided">
       <label for="doubleSided">Up & Over (Double-sided roof)</label>
     </div>
-  </div>
-
-  <div class="row">
     <div>
       <input type="checkbox" id="includeRidge" onchange="toggleRidge()">
       <label for="includeRidge">Include Ridge Tiles</label>
