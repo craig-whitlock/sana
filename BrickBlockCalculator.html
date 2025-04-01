@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="="en">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -19,6 +19,7 @@
       padding: 30px;
       border-radius: 12px;
       box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      border-top: 4px solid #D42F2F;
     }
 
     h2 {
@@ -31,8 +32,8 @@
       margin-top: 30px;
       margin-bottom: 15px;
       padding-bottom: 5px;
-      border-bottom: 2px solid #007acc;
-      color: #007acc;
+      border-bottom: 2px solid #D42F2F;
+      color: #D42F2F;
     }
 
     .row {
@@ -57,7 +58,6 @@
     input, select {
       width: 100%;
       padding: 10px;
-      margin-top: 5px;
       box-sizing: border-box;
       border-radius: 6px;
       border: 1px solid #ccc;
@@ -68,7 +68,7 @@
       margin-top: 20px;
       width: 100%;
       padding: 12px;
-      background: #007acc;
+      background: #D42F2F;
       color: white;
       font-size: 16px;
       border: none;
@@ -78,22 +78,23 @@
     }
 
     button:hover {
-      background: #005fa3;
+      background: #b52828;
     }
 
     #results {
-      margin-top: 30px;
-      background: #e9f5ff;
+      margin-top: 25px;
+      background: #ffeaea;
       padding: 20px;
       border-radius: 8px;
       font-size: 16px;
       color: #222;
+      border-left: 4px solid #D42F2F;
     }
 
     .section {
       margin-bottom: 30px;
       background: #f9fafc;
-      padding: 20px;
+      padding: 15px 20px;
       border-radius: 10px;
       border: 1px solid #e0e6ed;
     }
@@ -218,7 +219,6 @@
       }
 
       const wallArea = length * height;
-
       const totalUnitWidth = (unitWidthMM + jointSizeMM) / 1000;
       const totalUnitHeight = (unitHeightMM + jointSizeMM) / 1000;
       const unitArea = totalUnitWidth * totalUnitHeight;
