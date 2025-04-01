@@ -201,6 +201,11 @@
   </div>
 
   <script>
+    function scrollToResults() {
+      const results = document.getElementById("results");
+      results.scrollIntoView({ behavior: "smooth" });
+    }
+
     function calculateStandard() {
       const length = parseFloat(document.getElementById('stdLength').value);
       const height = parseFloat(document.getElementById('stdHeight').value);
@@ -209,6 +214,7 @@
 
       if (isNaN(length) || isNaN(height) || length <= 0 || height <= 0) {
         results.innerHTML = "<strong>Please enter valid wall dimensions.</strong>";
+        scrollToResults();
         return;
       }
 
@@ -243,7 +249,9 @@
         <div class="result-extra">Estimated 25kg Cement Bags: <strong>${cementBags}</strong></div>
         <div class="result-extra">Estimated 25kg Sand Bags: <strong>${sandBags}</strong></div>
       `;
+
       sendHeight();
+      scrollToResults();
     }
 
     function calculateCustom() {
@@ -260,6 +268,7 @@
         unitWidthMM <= 0 || unitHeightMM <= 0 || jointSizeMM < 0
       ) {
         results.innerHTML = "<strong>Please enter valid inputs for the custom calculator.</strong>";
+        scrollToResults();
         return;
       }
 
@@ -284,10 +293,12 @@
         <div class="result-extra">Estimated 25kg Cement Bags: <strong>${cementBags}</strong></div>
         <div class="result-extra">Estimated 25kg Sand Bags: <strong>${sandBags}</strong></div>
       `;
+
       sendHeight();
+      scrollToResults();
     }
 
-    // 🔁 Auto-resize iframe support
+    // 🔁 Auto-resize for Sana iFrame
     function sendHeight() {
       const height = document.body.scrollHeight;
       parent.postMessage(height, "*");
