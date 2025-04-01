@@ -1,64 +1,99 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Brick & Block Calculator</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Segoe UI', sans-serif;
       background: #f2f4f7;
       margin: 0;
       padding: 20px;
     }
+
     .container {
-      max-width: 600px;
+      max-width: 700px;
       margin: auto;
       background: #fff;
       padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
     }
+
     h2 {
       text-align: center;
+      color: #2c3e50;
+      margin-bottom: 10px;
     }
+
     h3 {
       margin-top: 30px;
-      border-bottom: 1px solid #ccc;
+      margin-bottom: 15px;
       padding-bottom: 5px;
+      border-bottom: 2px solid #007acc;
+      color: #007acc;
     }
+
+    .row {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    .row > div {
+      flex: 1;
+      min-width: 120px;
+    }
+
     label {
-      display: block;
-      margin-top: 15px;
       font-weight: bold;
+      display: block;
+      margin-top: 10px;
+      margin-bottom: 5px;
+      color: #333;
     }
+
     input, select {
       width: 100%;
       padding: 10px;
-      margin-top: 5px;
-      border-radius: 5px;
+      border-radius: 6px;
       border: 1px solid #ccc;
-      font-size: 16px;
+      font-size: 15px;
     }
+
     button {
       margin-top: 20px;
-      padding: 12px;
       width: 100%;
+      padding: 12px;
       background: #007acc;
       color: white;
-      border: none;
-      border-radius: 5px;
       font-size: 16px;
+      border: none;
+      border-radius: 6px;
       cursor: pointer;
+      transition: background 0.3s ease;
     }
+
     button:hover {
       background: #005fa3;
     }
+
     #results {
       margin-top: 25px;
       background: #e9f5ff;
-      padding: 15px;
-      border-radius: 6px;
+      padding: 20px;
+      border-radius: 8px;
+      font-size: 16px;
+      color: #222;
+    }
+
+    .section {
+      margin-bottom: 30px;
+      background: #f9fafc;
+      padding: 15px 20px;
+      border-radius: 10px;
+      border: 1px solid #e0e6ed;
     }
   </style>
 </head>
@@ -67,39 +102,63 @@
     <h2>Brick & Block Calculator</h2>
 
     <!-- Standard Size Calculator -->
-    <h3>Standard Size Calculator</h3>
-    <label for="stdLength">Wall Length (m):</label>
-    <input type="number" id="stdLength" step="0.01">
+    <div class="section">
+      <h3>Standard Size Calculator</h3>
+      <div class="row">
+        <div>
+          <label for="stdLength">Wall Length (m)</label>
+          <input type="number" id="stdLength" step="0.01">
+        </div>
+        <div>
+          <label for="stdHeight">Wall Height (m)</label>
+          <input type="number" id="stdHeight" step="0.01">
+        </div>
+      </div>
 
-    <label for="stdHeight">Wall Height (m):</label>
-    <input type="number" id="stdHeight" step="0.01">
+      <div class="row">
+        <div>
+          <label for="stdType">Material Type</label>
+          <select id="stdType">
+            <option value="brick">Standard House Brick (215 x 65mm)</option>
+            <option value="block">Standard Block (440 x 215mm)</option>
+          </select>
+        </div>
+      </div>
 
-    <label for="stdType">Material Type:</label>
-    <select id="stdType">
-      <option value="brick">Standard House Brick (215 x 65mm)</option>
-      <option value="block">Standard Block (440 x 215mm)</option>
-    </select>
-
-    <button onclick="calculateStandard()">Calculate Standard</button>
+      <button onclick="calculateStandard()">Calculate Standard</button>
+    </div>
 
     <!-- Custom Size Calculator -->
-    <h3>Custom Size Calculator</h3>
-    <label for="customLength">Wall Length (m):</label>
-    <input type="number" id="customLength" step="0.01">
+    <div class="section">
+      <h3>Custom Size Calculator</h3>
+      <div class="row">
+        <div>
+          <label for="customLength">Wall Length (m)</label>
+          <input type="number" id="customLength" step="0.01">
+        </div>
+        <div>
+          <label for="customHeight">Wall Height (m)</label>
+          <input type="number" id="customHeight" step="0.01">
+        </div>
+      </div>
 
-    <label for="customHeight">Wall Height (m):</label>
-    <input type="number" id="customHeight" step="0.01">
+      <div class="row">
+        <div>
+          <label for="unitWidth">Unit Width (mm)</label>
+          <input type="number" id="unitWidth">
+        </div>
+        <div>
+          <label for="unitHeight">Unit Height (mm)</label>
+          <input type="number" id="unitHeight">
+        </div>
+        <div>
+          <label for="jointSize">Joint Size (mm)</label>
+          <input type="number" id="jointSize">
+        </div>
+      </div>
 
-    <label for="unitWidth">Unit Width (mm):</label>
-    <input type="number" id="unitWidth">
-
-    <label for="unitHeight">Unit Height (mm):</label>
-    <input type="number" id="unitHeight">
-
-    <label for="jointSize">Joint Size (mm):</label>
-    <input type="number" id="jointSize">
-
-    <button onclick="calculateCustom()">Calculate Custom</button>
+      <button onclick="calculateCustom()">Calculate Custom</button>
+    </div>
 
     <div id="results"></div>
   </div>
