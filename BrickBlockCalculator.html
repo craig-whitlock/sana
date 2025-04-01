@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Brick & Block Calculator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f2f4f7;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: #fff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+    }
+    h3 {
+      margin-top: 30px;
+      border-bottom: 1px solid #ccc;
+      padding-bottom: 5px;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
+    button {
+      margin-top: 20px;
+      padding: 12px;
+      width: 100%;
+      background: #007acc;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #005fa3;
+    }
+    #results {
+      margin-top: 25px;
+      background: #e9f5ff;
+      padding: 15px;
+      border-radius: 6px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Brick & Block Calculator</h2>
+
+    <!-- Standard Size Calculator -->
+    <h3>Standard Size Calculator</h3>
+    <label for="stdLength">Wall Length (m):</label>
+    <input type="number" id="stdLength" step="0.01">
+
+    <label for="stdHeight">Wall Height (m):</label>
+    <input type="number" id="stdHeight" step="0.01">
+
+    <label for="stdType">Material Type:</label>
+    <select id="stdType">
+      <option value="brick">Standard House Brick (215 x 65mm)</option>
+      <option value="block">Standard Block (440 x 215mm)</option>
+    </select>
+
+    <button onclick="calculateStandard()">Calculate Standard</button>
+
+    <!-- Custom Size Calculator -->
+    <h3>Custom Size Calculator</h3>
+    <label for="customLength">Wall Length (m):</label>
+    <input type="number" id="customLength" step="0.01">
+
+    <label for="customHeight">Wall Height (m):</label>
+    <input type="number" id="customHeight" step="0.01">
+
+    <label for="unitWidth">Unit Width (mm):</label>
+    <input type="number" id="unitWidth">
+
+    <label for="unitHeight">Unit Height (mm):</label>
+    <input type="number" id="unitHeight">
+
+    <label for="jointSize">Joint Size (mm):</label>
+    <input type="number" id="jointSize">
+
+    <button onclick="calculateCustom()">Calculate Custom</button>
+
+    <div id="results"></div>
+  </div>
+
+  <script>
+    function calculateStandard() {
+      const length = parseFloat(document.getElementById('stdLength').value);
+      const height = parseFloat(document.getElementById('stdHeight').value);
+      const type = document.getElementById('stdType').value;
+      const results = document.getElementById('results');
+
+      if (isNaN(length) || isNaN(height) || length <= 0 || height <= 0) {
+        results.innerHTML = "<strong>Please enter valid wall dimensions.</strong>";
+        return;
+      }
+
+      const wallArea = length * height;
+      let unitWidth, unitHeight, label;
+
+      if (type === 'brick') {
+        unitWidth = 0.215;
+        unitHeight = 0.065;
+        label = "Standard House Bricks";
+      } else {
+        unitWidth = 0.44;
+        unitHeight = 0.215;
+        label = "Standard Blocks";
+      }
+
+      const unitArea = unitWidth * unitHeight;
+      const unitsNeeded = Math.ceil((wallArea / unitArea) * 1.05);
+
+      results.innerHTML = `
+        <strong>${label}</strong><br>
+        Wall Area: ${wallArea.toFixed(2)} m²<br>
+        Estimated Units Needed: <strong>${unitsNeeded}</strong>
+      `;
+    }
+
+    function calculateCustom() {
+      const length = parseFloat(document.getElementById('customLength').value);
+      const height = parseFloat(document.getElementById('customHeight').value);
+      const unitWidthMM = parseFloat(document.getElementById('unitWidth').value);
+      const unitHeightMM = parseFloat(document.getElementById('unitHeight').value);
+      const jointSizeMM = parseFloat(document.getElementById('jointSize').value);
+      const results = document.getElementById('results');
+
+      if (
+        isNaN(length) || isNaN(height) || length <= 0 || height <= 0 ||
+        isNaN(unitWidthMM) || isNaN(unitHeightMM) || isNaN(jointSizeMM) ||
+        unitWidthMM <= 0 || unitHeightMM <= 0 || jointSizeMM < 0
+      ) {
+        results.innerHTML = "<strong>Please enter valid inputs for the custom calculator.</strong>";
+        return;
+      }
+
+      const wallArea = length * height;
+
+      const totalUnitWidth = (unitWidthMM + jointSizeMM) / 1000;
+      const totalUnitHeight = (unitHeightMM + jointSizeMM) / 1000;
+      const unitArea = totalUnitWidth * totalUnitHeight;
+
+      const unitsNeeded = Math.ceil((wallArea / unitArea) * 1.05);
+
+      results.innerHTML = `
+        <strong>Custom Unit</strong><br>
+        Wall Area: ${wallArea.toFixed(2)} m²<br>
+        Unit + Joint Size: ${totalUnitWidth.toFixed(3)}m x ${totalUnitHeight.toFixed(3)}m<br>
+        Estimated Units Needed: <strong>${unitsNeeded}</strong>
+      `;
+    }
+  </script>
+</body>
+</html>
