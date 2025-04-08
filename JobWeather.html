@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jobsite Forecast - Wolverhampton</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f9f9f9;
+      color: #333;
+    }
+    header {
+      background-color: #D42F2F;
+      color: white;
+      padding: 1rem;
+      text-align: center;
+    }
+    main {
+      max-width: 800px;
+      margin: 20px auto;
+      padding: 20px;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .forecast {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: space-between;
+    }
+    .day {
+      flex: 1 1 150px;
+      background: #f1f1f1;
+      border-radius: 8px;
+      padding: 10px;
+      text-align: center;
+    }
+    .advice {
+      margin-top: 20px;
+      padding: 15px;
+      background: #fff4f4;
+      border-left: 5px solid #D42F2F;
+    }
+    @media (max-width: 600px) {
+      .forecast {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Jobsite Forecast</h1>
+    <p>Wolverhampton (WV1 1JY)</p>
+  </header>
+  <main>
+    <h2>3–5 Day Forecast</h2>
+    <div id="forecast" class="forecast"></div>
+    <div id="advice" class="advice"></div>
+  </main>
+  <script>
+    const API_KEY = '981da7566c7a05e34b47ea3fb992bfb1';
+    const LAT = 52.5862;
+    const LON = -2.1286;
+
+    async function getForecast() {
+      const res = await fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${LAT}&lon=${LON}&units=metric&appid=${API_KEY}`);
+      const data = await res.json();
+      const daily = {};
+
+      // Group data by date (first 5 days)
+      data.list.forEach(item => {
+        const date = item.dt_txt.split(' ')[0];
+        if (!daily[date]) daily[date] = [];
+        daily[date].push(item);
+      });
+
+      const forecastDiv = document.getElementById('forecast');
+      let adviceText = '';
+
+      Object.keys(daily).slice(0, 5).forEach(date => {
+        const dayData = daily[date];
+        const temps = dayData.map(d => d.main.temp);
+        const windSpeeds = dayData.map(d => d.wind.speed);
+        const weatherMain = dayData[0].weather[0].main;
+
+        const avgTemp = (temps.reduce((a, b) => a + b, 0) / temps.length).toFixed(1);
+        const maxWind = Math.max(...windSpeeds).toFixed(1);
+
+        const div = document.createElement('div');
+        div.className = 'day';
+        div.innerHTML = `<h3>${date}</h3>
+                         <p>${weatherMain}</p>
+                         <p>Avg Temp: ${avgTemp}&deg;C</p>
+                         <p>Wind: ${maxWind} m/s</p>`;
+        forecastDiv.appendChild(div);
+
+        // Generate advice (simple logic)
+        if (weatherMain.includes('Rain') || avgTemp < 3) {
+          adviceText = '⚠️ Wet or cold conditions — avoid concrete pours or rendering.';
+        } else if (maxWind > 10) {
+          adviceText = '⚠️ Strong wind expected — roofing work not recommended.';
+        } else {
+          adviceText = '✅ Good conditions for most outdoor jobs.';
+        }
+      });
+
+      document.getElementById('advice').innerText = adviceText;
+    }
+
+    getForecast();
+  </script>
+</body>
+</html>
