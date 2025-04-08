@@ -129,13 +129,13 @@
         });
 
         document.getElementById('advice').innerText = adviceText;
-        sendHeightToParent();
+        setTimeout(sendHeightToParent, 100);
 
       } catch (err) {
         console.error('Error fetching forecast:', err);
         document.getElementById('forecast').innerHTML = '<p style="color:red;">Error loading weather data. Please check the location.</p>';
         document.getElementById('advice').innerText = '';
-        sendHeightToParent();
+        setTimeout(sendHeightToParent, 100);
       }
     }
 
