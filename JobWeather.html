@@ -47,8 +47,19 @@
     .advice {
       margin-top: 20px;
       padding: 15px;
-      background: #fff4f4;
-      border-left: 5px solid #D42F2F;
+      border-left: 5px solid;
+      border-radius: 4px;
+      font-weight: bold;
+    }
+    .advice.good {
+      background-color: #e6f4ea;
+      border-color: #34a853;
+      color: #1a5e20;
+    }
+    .advice.warn {
+      background-color: #fff4e5;
+      border-color: #ffa726;
+      color: #8a4b00;
     }
     .updated {
       margin-top: 10px;
@@ -140,6 +151,7 @@
       const forecastDiv = document.getElementById('forecast');
       forecastDiv.innerHTML = '';
       let adviceText = '';
+      let adviceClass = '';
 
       data.forecast.forecastday.forEach(day => {
         const rawDate = new Date(day.date);
@@ -162,15 +174,20 @@
 
         if (condition.toLowerCase().includes('rain') || avgTemp < 3) {
           adviceText = '⚠️ Wet or cold conditions — avoid concrete pours or rendering.';
+          adviceClass = 'warn';
         } else if (maxWindMph > 25) {
           adviceText = '⚠️ Strong wind expected — roofing work not recommended.';
+          adviceClass = 'warn';
         } else {
           adviceText = '✅ Good conditions for most outdoor jobs.';
+          adviceClass = 'good';
         }
       });
 
       const updatedTime = new Date().toLocaleString('en-GB');
-      document.getElementById('advice').innerText = adviceText;
+      const adviceBox = document.getElementById('advice');
+      adviceBox.className = `advice ${adviceClass}`;
+      adviceBox.innerText = adviceText;
       document.getElementById('lastUpdated').innerText = `Last updated: ${updatedTime}`;
       setTimeout(sendHeightToParent, 100);
     }
