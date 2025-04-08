@@ -63,53 +63,47 @@
     <div id="advice" class="advice"></div>
   </main>
   <script>
-    const API_KEY = '981da7566c7a05e34b47ea3fb992bfb1';
-    const LAT = 52.5862;
-    const LON = -2.1286;
+    const API_KEY = '3111612a7742438681b83337250804';
+    const LOCATION = 'Wolverhampton';
 
     async function getForecast() {
-      const res = await fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${LAT}&lon=${LON}&units=metric&appid=${API_KEY}`);
-      const data = await res.json();
-      const daily = {};
+      try {
+        const res = await fetch(`https://api.weatherapi.com/v1/forecast.json?key=${API_KEY}&q=${LOCATION}&days=5`);
+        const data = await res.json();
+        console.log('API Response:', data);
 
-      // Group data by date (first 5 days)
-      data.list.forEach(item => {
-        const date = item.dt_txt.split(' ')[0];
-        if (!daily[date]) daily[date] = [];
-        daily[date].push(item);
-      });
+        const forecastDiv = document.getElementById('forecast');
+        let adviceText = '';
 
-      const forecastDiv = document.getElementById('forecast');
-      let adviceText = '';
+        data.forecast.forecastday.forEach(day => {
+          const date = day.date;
+          const avgTemp = day.day.avgtemp_c;
+          const maxWind = day.day.maxwind_kph;
+          const condition = day.day.condition.text;
 
-      Object.keys(daily).slice(0, 5).forEach(date => {
-        const dayData = daily[date];
-        const temps = dayData.map(d => d.main.temp);
-        const windSpeeds = dayData.map(d => d.wind.speed);
-        const weatherMain = dayData[0].weather[0].main;
+          const div = document.createElement('div');
+          div.className = 'day';
+          div.innerHTML = `<h3>${date}</h3>
+                           <p>${condition}</p>
+                           <p>Avg Temp: ${avgTemp}&deg;C</p>
+                           <p>Max Wind: ${maxWind} kph</p>`;
+          forecastDiv.appendChild(div);
 
-        const avgTemp = (temps.reduce((a, b) => a + b, 0) / temps.length).toFixed(1);
-        const maxWind = Math.max(...windSpeeds).toFixed(1);
+          // Generate advice (simple logic)
+          if (condition.toLowerCase().includes('rain') || avgTemp < 3) {
+            adviceText = '⚠️ Wet or cold conditions — avoid concrete pours or rendering.';
+          } else if (maxWind > 40) {
+            adviceText = '⚠️ Strong wind expected — roofing work not recommended.';
+          } else {
+            adviceText = '✅ Good conditions for most outdoor jobs.';
+          }
+        });
 
-        const div = document.createElement('div');
-        div.className = 'day';
-        div.innerHTML = `<h3>${date}</h3>
-                         <p>${weatherMain}</p>
-                         <p>Avg Temp: ${avgTemp}&deg;C</p>
-                         <p>Wind: ${maxWind} m/s</p>`;
-        forecastDiv.appendChild(div);
-
-        // Generate advice (simple logic)
-        if (weatherMain.includes('Rain') || avgTemp < 3) {
-          adviceText = '⚠️ Wet or cold conditions — avoid concrete pours or rendering.';
-        } else if (maxWind > 10) {
-          adviceText = '⚠️ Strong wind expected — roofing work not recommended.';
-        } else {
-          adviceText = '✅ Good conditions for most outdoor jobs.';
-        }
-      });
-
-      document.getElementById('advice').innerText = adviceText;
+        document.getElementById('advice').innerText = adviceText;
+      } catch (err) {
+        console.error('Error fetching forecast:', err);
+        document.getElementById('forecast').innerHTML = '<p style="color:red;">Error loading weather data.</p>';
+      }
     }
 
     getForecast();
