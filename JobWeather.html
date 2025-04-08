@@ -119,7 +119,6 @@
                            <p>Max Wind: ${maxWind} kph</p>`;
           forecastDiv.appendChild(div);
 
-          // Generate advice (simple logic)
           if (condition.toLowerCase().includes('rain') || avgTemp < 3) {
             adviceText = '⚠️ Wet or cold conditions — avoid concrete pours or rendering.';
           } else if (maxWind > 40) {
@@ -130,14 +129,24 @@
         });
 
         document.getElementById('advice').innerText = adviceText;
+        sendHeightToParent();
+
       } catch (err) {
         console.error('Error fetching forecast:', err);
         document.getElementById('forecast').innerHTML = '<p style="color:red;">Error loading weather data. Please check the location.</p>';
         document.getElementById('advice').innerText = '';
+        sendHeightToParent();
       }
     }
 
-    // Load default location forecast
+    function sendHeightToParent() {
+      const height = document.body.scrollHeight;
+      window.parent.postMessage(height, '*');
+    }
+
+    window.addEventListener('load', sendHeightToParent);
+    window.addEventListener('resize', sendHeightToParent);
+
     getForecast();
   </script>
 </body>
