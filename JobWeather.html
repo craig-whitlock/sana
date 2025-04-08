@@ -39,6 +39,10 @@
       padding: 10px;
       text-align: center;
     }
+    .day img {
+      width: 48px;
+      height: 48px;
+    }
     .advice {
       margin-top: 20px;
       padding: 15px;
@@ -108,20 +112,23 @@
         data.forecast.forecastday.forEach(day => {
           const date = day.date;
           const avgTemp = day.day.avgtemp_c;
-          const maxWind = day.day.maxwind_kph;
+          const maxWindKph = day.day.maxwind_kph;
+          const maxWindMph = (maxWindKph * 0.621371).toFixed(1);
           const condition = day.day.condition.text;
+          const iconUrl = 'https:' + day.day.condition.icon;
 
           const div = document.createElement('div');
           div.className = 'day';
           div.innerHTML = `<h3>${date}</h3>
+                           <img src="${iconUrl}" alt="${condition}">
                            <p>${condition}</p>
                            <p>Avg Temp: ${avgTemp}&deg;C</p>
-                           <p>Max Wind: ${maxWind} kph</p>`;
+                           <p>Max Wind: ${maxWindMph} mph</p>`;
           forecastDiv.appendChild(div);
 
           if (condition.toLowerCase().includes('rain') || avgTemp < 3) {
             adviceText = '⚠️ Wet or cold conditions — avoid concrete pours or rendering.';
-          } else if (maxWind > 40) {
+          } else if (maxWindMph > 25) {
             adviceText = '⚠️ Strong wind expected — roofing work not recommended.';
           } else {
             adviceText = '✅ Good conditions for most outdoor jobs.';
