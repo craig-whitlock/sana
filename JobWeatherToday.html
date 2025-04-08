@@ -98,6 +98,7 @@
         renderBanner(data);
       } catch (err) {
         document.getElementById('weatherBanner').innerHTML = '<span style="color:red">⚠️ Weather unavailable</span>';
+        sendHeightToParent();
       }
     }
 
@@ -130,6 +131,13 @@
         adviceEl.className = 'advice good';
         adviceEl.innerText = '✅ Suitable for outdoor work';
       }
+
+      sendHeightToParent();
+    }
+
+    function sendHeightToParent() {
+      const height = document.body.scrollHeight;
+      window.parent.postMessage(height, '*');
     }
 
     function autoDetect() {
@@ -143,7 +151,11 @@
       }
     }
 
-    autoDetect();
+    window.addEventListener('load', () => {
+      autoDetect();
+      sendHeightToParent();
+    });
+    window.addEventListener('resize', sendHeightToParent);
   </script>
 </body>
 </html>
