@@ -12,41 +12,38 @@
       background: #fff;
       width: 100%;
     }
-    .widget {
-      max-width: 400px;
-      margin: auto;
-      padding: 20px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      border-radius: 10px;
-      background: white;
-      box-sizing: border-box;
-    }
-    .widget h2 {
-      margin: 0 0 10px;
-      font-size: 1.2rem;
-      color: #D42F2F;
-      text-align: center;
-    }
-    .weather {
+    .banner {
       display: flex;
       align-items: center;
-      justify-content: space-around;
-      margin: 10px 0;
-    }
-    .weather img {
-      width: 48px;
-      height: 48px;
-    }
-    .details {
+      justify-content: space-between;
+      gap: 10px;
+      padding: 10px 20px;
+      background-color: #f9f9f9;
+      color: #333;
       font-size: 0.95rem;
+      border-top: 1px solid #ddd;
+      border-bottom: 1px solid #ddd;
+      flex-wrap: wrap;
+      transition: background-color 0.3s, color 0.3s;
+    }
+    .banner.night {
+      background-color: #2c2c2c;
+      color: #f5f5f5;
+    }
+    .weather-icon {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .weather-icon img {
+      width: 32px;
+      height: 32px;
     }
     .advice {
-      margin-top: 15px;
-      padding: 10px;
-      border-left: 5px solid;
-      border-radius: 4px;
       font-weight: bold;
-      text-align: center;
+      padding: 4px 8px;
+      border-left: 4px solid;
+      border-radius: 4px;
     }
     .advice.good {
       background-color: #e6f4ea;
@@ -58,20 +55,37 @@
       border-color: #ffa726;
       color: #8a4b00;
     }
-    .footer {
-      font-size: 0.8rem;
-      color: #888;
-      text-align: center;
-      margin-top: 10px;
+    .more {
+      margin-left: auto;
+      font-size: 0.85rem;
+      text-decoration: none;
+      color: #D42F2F;
+      font-weight: bold;
+    }
+    .banner.night .more {
+      color: #90caf9;
+    }
+    @media (max-width: 600px) {
+      .banner {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+      }
+      .more {
+        margin-left: 0;
+        align-self: flex-end;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="widget">
-    <h2 id="location">Today's Jobsite Weather</h2>
-    <div class="weather" id="weather"></div>
-    <div id="advice" class="advice"></div>
-    <div class="footer" id="lastUpdated"></div>
+  <div class="banner" id="weatherBanner">
+    <span id="location">Loading...</span>
+    <div class="weather-icon" id="iconBlock"></div>
+    <span id="temp"></span>
+    <span id="wind"></span>
+    <span id="advice" class="advice"></span>
+    <a href="https://craig-whitlock.github.io/sana/JobsiteForecast.html" class="more" target="_blank">Show full forecast →</a>
   </div>
 
   <script>
@@ -81,43 +95,41 @@
       try {
         const res = await fetch(`https://api.weatherapi.com/v1/forecast.json?key=${API_KEY}&q=${location}&days=1`);
         const data = await res.json();
-        renderToday(data);
+        renderBanner(data);
       } catch (err) {
-        document.getElementById('weather').innerHTML = '<p style="color:red">Unable to load weather data</p>';
-        document.getElementById('advice').style.display = 'none';
+        document.getElementById('weatherBanner').innerHTML = '<span style="color:red">⚠️ Weather unavailable</span>';
       }
     }
 
-    function renderToday(data) {
+    function renderBanner(data) {
       const today = data.forecast.forecastday[0].day;
       const icon = 'https:' + today.condition.icon;
       const condition = today.condition.text;
       const avgTemp = today.avgtemp_c;
       const windMph = (today.maxwind_kph * 0.621371).toFixed(1);
+      const localTime = new Date(`${data.location.localtime.replace(' ', 'T')}`);
+      const hour = localTime.getHours();
+      const isNight = hour < 6 || hour > 18;
 
-      document.getElementById('location').innerText = `Today's Weather – ${data.location.name}`;
-      document.getElementById('weather').innerHTML = `
-        <img src="${icon}" alt="${condition}" />
-        <div class="details">
-          <p>${condition}</p>
-          <p>Avg Temp: ${avgTemp}&deg;C</p>
-          <p>Max Wind: ${windMph} mph</p>
-        </div>`;
+      const banner = document.getElementById('weatherBanner');
+      if (isNight) banner.classList.add('night');
 
-      const adviceBox = document.getElementById('advice');
+      document.getElementById('location').innerText = `${isNight ? '🌙' : '☀️'} ${data.location.name}`;
+      document.getElementById('iconBlock').innerHTML = `<img src="${icon}" alt="${condition}"><span>${condition}</span>`;
+      document.getElementById('temp').innerText = `🌡 Avg Temp: ${avgTemp}°C`;
+      document.getElementById('wind').innerText = `💨 Max Wind: ${windMph} mph`;
+
+      const adviceEl = document.getElementById('advice');
       if (condition.toLowerCase().includes('rain') || avgTemp < 3) {
-        adviceBox.className = 'advice warn';
-        adviceBox.innerText = '⚠️ Wet or cold conditions — avoid concrete pours or rendering.';
+        adviceEl.className = 'advice warn';
+        adviceEl.innerText = '⚠️ Avoid concrete or rendering';
       } else if (windMph > 25) {
-        adviceBox.className = 'advice warn';
-        adviceBox.innerText = '⚠️ Strong wind expected — roofing work not recommended.';
+        adviceEl.className = 'advice warn';
+        adviceEl.innerText = '⚠️ Windy – avoid roofing';
       } else {
-        adviceBox.className = 'advice good';
-        adviceBox.innerText = '✅ Good conditions for most outdoor jobs.';
+        adviceEl.className = 'advice good';
+        adviceEl.innerText = '✅ Suitable for outdoor work';
       }
-
-      const updatedTime = new Date().toLocaleString('en-GB');
-      document.getElementById('lastUpdated').innerText = `Updated: ${updatedTime}`;
     }
 
     function autoDetect() {
