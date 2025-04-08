@@ -50,6 +50,12 @@
       background: #fff4f4;
       border-left: 5px solid #D42F2F;
     }
+    .updated {
+      margin-top: 10px;
+      font-size: 0.9rem;
+      color: #666;
+      text-align: right;
+    }
     form {
       margin-bottom: 20px;
       display: flex;
@@ -85,6 +91,7 @@
     <h2 id="locationTitle">Forecast</h2>
     <div id="forecast" class="forecast"></div>
     <div id="advice" class="advice"></div>
+    <div id="lastUpdated" class="updated"></div>
   </main>
   <script>
     const API_KEY = '3111612a7742438681b83337250804';
@@ -96,52 +103,76 @@
       getForecast(location);
     });
 
+    function autoDetectLocation() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          async position => {
+            const lat = position.coords.latitude;
+            const lon = position.coords.longitude;
+            const res = await fetch(`https://api.weatherapi.com/v1/forecast.json?key=${API_KEY}&q=${lat},${lon}&days=3`);
+            const data = await res.json();
+            const locationName = `${data.location.name}, ${data.location.region}`;
+            document.getElementById('locationTitle').innerText = `Forecast for ${locationName}`;
+            renderForecast(data);
+          },
+          () => getForecast() // fallback to default
+        );
+      } else {
+        getForecast();
+      }
+    }
+
     async function getForecast(location = 'Wolverhampton') {
       try {
-        const res = await fetch(`https://api.weatherapi.com/v1/forecast.json?key=${API_KEY}&q=${location}&days=5`);
+        const res = await fetch(`https://api.weatherapi.com/v1/forecast.json?key=${API_KEY}&q=${location}&days=3`);
         const data = await res.json();
-
-        const forecastDiv = document.getElementById('forecast');
-        forecastDiv.innerHTML = '';
-        let adviceText = '';
-
-        data.forecast.forecastday.forEach(day => {
-          const rawDate = new Date(day.date);
-          const formattedDate = `${rawDate.getDate().toString().padStart(2, '0')}/${(rawDate.getMonth() + 1).toString().padStart(2, '0')}/${rawDate.getFullYear()}`;
-
-          const avgTemp = day.day.avgtemp_c;
-          const maxWindKph = day.day.maxwind_kph;
-          const maxWindMph = (maxWindKph * 0.621371).toFixed(1);
-          const condition = day.day.condition.text;
-          const iconUrl = 'https:' + day.day.condition.icon;
-
-          const div = document.createElement('div');
-          div.className = 'day';
-          div.innerHTML = `<h3>${formattedDate}</h3>
-                           <img src="${iconUrl}" alt="${condition}">
-                           <p>${condition}</p>
-                           <p>Avg Temp: ${avgTemp}&deg;C</p>
-                           <p>Max Wind: ${maxWindMph} mph</p>`;
-          forecastDiv.appendChild(div);
-
-          if (condition.toLowerCase().includes('rain') || avgTemp < 3) {
-            adviceText = '⚠️ Wet or cold conditions — avoid concrete pours or rendering.';
-          } else if (maxWindMph > 25) {
-            adviceText = '⚠️ Strong wind expected — roofing work not recommended.';
-          } else {
-            adviceText = '✅ Good conditions for most outdoor jobs.';
-          }
-        });
-
-        document.getElementById('advice').innerText = adviceText;
-        setTimeout(sendHeightToParent, 100);
-
+        renderForecast(data);
       } catch (err) {
         console.error('Error fetching forecast:', err);
         document.getElementById('forecast').innerHTML = '<p style="color:red;">Error loading weather data. Please check the location.</p>';
         document.getElementById('advice').innerText = '';
+        document.getElementById('lastUpdated').innerText = '';
         setTimeout(sendHeightToParent, 100);
       }
+    }
+
+    function renderForecast(data) {
+      const forecastDiv = document.getElementById('forecast');
+      forecastDiv.innerHTML = '';
+      let adviceText = '';
+
+      data.forecast.forecastday.forEach(day => {
+        const rawDate = new Date(day.date);
+        const formattedDate = `${rawDate.getDate().toString().padStart(2, '0')}/${(rawDate.getMonth() + 1).toString().padStart(2, '0')}/${rawDate.getFullYear()}`;
+
+        const avgTemp = day.day.avgtemp_c;
+        const maxWindKph = day.day.maxwind_kph;
+        const maxWindMph = (maxWindKph * 0.621371).toFixed(1);
+        const condition = day.day.condition.text;
+        const iconUrl = 'https:' + day.day.condition.icon;
+
+        const div = document.createElement('div');
+        div.className = 'day';
+        div.innerHTML = `<h3>${formattedDate}</h3>
+                         <img src="${iconUrl}" alt="${condition}">
+                         <p>${condition}</p>
+                         <p>Avg Temp: ${avgTemp}&deg;C</p>
+                         <p>Max Wind: ${maxWindMph} mph</p>`;
+        forecastDiv.appendChild(div);
+
+        if (condition.toLowerCase().includes('rain') || avgTemp < 3) {
+          adviceText = '⚠️ Wet or cold conditions — avoid concrete pours or rendering.';
+        } else if (maxWindMph > 25) {
+          adviceText = '⚠️ Strong wind expected — roofing work not recommended.';
+        } else {
+          adviceText = '✅ Good conditions for most outdoor jobs.';
+        }
+      });
+
+      const updatedTime = new Date().toLocaleString('en-GB');
+      document.getElementById('advice').innerText = adviceText;
+      document.getElementById('lastUpdated').innerText = `Last updated: ${updatedTime}`;
+      setTimeout(sendHeightToParent, 100);
     }
 
     function sendHeightToParent() {
@@ -149,10 +180,8 @@
       window.parent.postMessage(height, '*');
     }
 
-    window.addEventListener('load', sendHeightToParent);
+    window.addEventListener('load', autoDetectLocation);
     window.addEventListener('resize', sendHeightToParent);
-
-    getForecast();
   </script>
 </body>
 </html>
