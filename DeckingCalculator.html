@@ -80,15 +80,19 @@
       `;
 
       // iFrame height adjustment trigger
+      const height = document.body.scrollHeight;
       if (window.parent) {
-        window.parent.postMessage({ frameHeight: document.body.scrollHeight }, '*');
+        window.parent.postMessage(height, '*');
+        window.parent.postMessage({ frameHeight: height }, '*');
       }
     }
 
     // Auto height on load
     window.addEventListener('load', function () {
+      const height = document.body.scrollHeight;
       if (window.parent) {
-        window.parent.postMessage({ frameHeight: document.body.scrollHeight }, '*');
+        window.parent.postMessage(height, '*');
+        window.parent.postMessage({ frameHeight: height }, '*');
       }
     });
   </script>
