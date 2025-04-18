@@ -3,218 +3,82 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fencing Calculator</title>
+  <title>Decking Calculator</title>
   <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #f2f4f7;
-      margin: 0;
-      padding: 20px;
-    }
-    .container {
-      max-width: 700px;
-      margin: auto;
-      background: #fff;
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-      border-top: 4px solid #D42F2F;
-    }
-    h2 {
-      text-align: center;
-      color: #2c3e50;
-      margin-bottom: 20px;
-    }
-    .row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 15px;
-      margin-bottom: 15px;
-    }
-    .row > div {
-      flex: 1;
-      min-width: 140px;
-    }
-    label {
-  font-weight: bold;
-  display: block;
-  margin-bottom: 5px;
-  color: #333;
-}
-.checkbox label {
-  font-weight: normal;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 0;
-  line-height: 1.2;
-}
-    input, select {
-      width: 100%;
-      padding: 10px;
-      box-sizing: border-box;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      font-size: 15px;
-    }
-    .checkbox {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin: 10px 0;
-    }
-    button {
-      margin-top: 20px;
-      width: 100%;
-      padding: 12px;
-      background: #D42F2F;
-      color: white;
-      font-size: 16px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: background 0.3s ease;
-    }
-    button:hover {
-      background: #b52828;
-    }
-    .results-box {
-      margin-top: 20px;
-      background: #ffeaea;
-      padding: 20px;
-      border-radius: 8px;
-      font-size: 16px;
-      color: #222;
-      border-left: 4px solid #D42F2F;
-      text-align: center;
-    }
-    .result-number {
-      font-size: 32px;
-      font-weight: bold;
-      color: #D42F2F;
-      line-height: 1.2;
-    }
-    .result-label {
-      font-size: 14px;
-      color: #555;
-      margin-top: 5px;
-    }
-    .footnote {
-      font-size: 13px;
-      color: #666;
-      margin-top: 20px;
-      text-align: center;
-    }
+    body { font-family: Arial, sans-serif; padding: 20px; max-width: 800px; margin: auto; }
+    h1 { color: #D42F2F; }
+    label { display: block; margin-top: 10px; font-weight: bold; }
+    input, select { width: 100%; padding: 8px; margin-top: 4px; }
+    button { margin-top: 20px; background: #D42F2F; color: white; padding: 10px 20px; border: none; border-radius: 6px; font-size: 16px; cursor: pointer; }
+    .result { margin-top: 20px; background: #f9f9f9; padding: 15px; border-left: 4px solid #D42F2F; }
   </style>
 </head>
 <body>
-<div class="container">
-  <h2>Fencing Calculator</h2>
+  <h1>Decking Calculator</h1>
 
-  <div class="row">
-    <div>
-      <label for="fenceLength">Total Fence Length (m)</label>
-      <input type="number" id="fenceLength" step="0.01">
-    </div>
-    <div>
-      <label for="panelWidth">Panel Width</label>
-      <select id="panelWidth" onchange="toggleCustomWidth()">
-        <option value="1.8">1.8m (Standard)</option>
-        <option value="1.5">1.5m</option>
-        <option value="custom">Custom</option>
-      </select>
-    </div>
-    <div id="customWidthRow" style="display:none">
-      <label for="customWidth">Enter Custom Panel Width (m)</label>
-      <input type="number" id="customWidth" step="0.01">
-    </div>
-  </div>
+  <label for="deckLength">Deck Length (m)</label>
+  <input type="number" id="deckLength" value="4" step="0.1">
 
-  <div class="checkbox">
-  <label><input type="checkbox" id="includeGate" onchange="toggleGate()"> Include Gate?</label>
-</div>
+  <label for="deckWidth">Deck Width (m)</label>
+  <input type="number" id="deckWidth" value="3" step="0.1">
 
-  <div class="row" id="gateRow" style="display:none">
-    <div>
-      <label for="gateWidth">Gate Width (mm)</label>
-      <input type="number" id="gateWidth" step="0.01">
-    </div>
-  </div>
+  <label for="boardLength">Deck Board Length (m)</label>
+  <input type="number" id="boardLength" value="3.6" step="0.1">
 
-  <div class="row">
-    <div>
-      <label for="postType">Post Type</label>
-      <select id="postType">
-        <option value="concrete">Concrete</option>
-        <option value="wooden">Wooden</option>
-      </select>
-    </div>
-  </div>
+  <label for="joistSpacing">Joist Spacing (mm)</label>
+  <select id="joistSpacing">
+    <option value="400">400mm (standard)</option>
+    <option value="450">450mm</option>
+    <option value="600">600mm</option>
+  </select>
 
-  <button onclick="calculateFencing()">Calculate</button>
+  <label for="wastage">Wastage Allowance (%)</label>
+  <input type="number" id="wastage" value="10">
 
-  <div id="results" class="results-box" style="display: none;"></div>
+  <button onclick="calculateDecking()">Calculate Materials</button>
 
-  <div class="footnote">
-    Estimations based on full panels. Does not account for angles or changes in terrain.
-  </div>
-</div>
+  <div id="result" class="result" style="display:none;"></div>
 
-<script>
-  function toggleCustomWidth() {
-    const panelWidth = document.getElementById("panelWidth").value;
-    document.getElementById("customWidthRow").style.display = panelWidth === "custom" ? "block" : "none";
-  }
+  <script>
+    function calculateDecking() {
+      const deckLength = parseFloat(document.getElementById('deckLength').value);
+      const deckWidth = parseFloat(document.getElementById('deckWidth').value);
+      const boardLength = parseFloat(document.getElementById('boardLength').value);
+      const joistSpacing = parseFloat(document.getElementById('joistSpacing').value);
+      const wastage = parseFloat(document.getElementById('wastage').value);
 
-  function toggleGate() {
-    document.getElementById("gateRow").style.display = document.getElementById("includeGate").checked ? "flex" : "none";
-  }
+      const boardWidth = 0.12; // 120mm decking boards
 
-  function calculateFencing() {
-    const totalLength = parseFloat(document.getElementById("fenceLength").value);
-    let panelWidth = document.getElementById("panelWidth").value;
-    if (panelWidth === "custom") {
-      panelWidth = parseFloat(document.getElementById("customWidth").value);
-    } else {
-      panelWidth = parseFloat(panelWidth);
+      const deckArea = deckLength * deckWidth;
+      const boardArea = boardLength * boardWidth;
+
+      let boardsNeeded = deckArea / boardArea;
+      boardsNeeded *= (1 + wastage / 100);
+      boardsNeeded = Math.ceil(boardsNeeded);
+
+      // Joists run across the width (perpendicular to board direction)
+      const joistCount = Math.ceil((deckWidth * 1000) / joistSpacing) + 1;
+      const joistLengthEach = deckLength;
+      const totalJoistLength = joistCount * joistLengthEach;
+      const standardJoistLength = 3.6; // typical stock length
+      const joistsNeeded = Math.ceil(totalJoistLength / standardJoistLength);
+
+      // Screws: 2 per joist crossing, assume 5 joists per board avg
+      const screwsPerBoard = 2 * joistCount;
+      const totalScrews = boardsNeeded * screwsPerBoard;
+      const screwBoxSize = 200;
+      const screwBoxesNeeded = Math.ceil(totalScrews / screwBoxSize);
+
+      const resultDiv = document.getElementById('result');
+      resultDiv.style.display = 'block';
+      resultDiv.innerHTML = `
+        <strong>Decking Area:</strong> ${deckArea.toFixed(2)} m²<br>
+        <strong>Deck Boards Needed:</strong> ${boardsNeeded} (120mm wide x ${boardLength}m long)<br>
+        <strong>Joists Needed:</strong> ${joistsNeeded} (based on ${joistCount} joists at ${joistLengthEach}m each)<br>
+        <strong>Screw Boxes Needed:</strong> ${screwBoxesNeeded} (approx. ${totalScrews} screws total)<br><br>
+        <em>Includes ${wastage}% allowance for cuts and off-cuts. Joist count based on ${joistSpacing}mm centres.</em>
+      `;
     }
-    const includeGate = document.getElementById("includeGate").checked;
-    const gateWidth = includeGate ? parseFloat(document.getElementById("gateWidth").value) / 1000 : 0;
-    const postType = document.getElementById("postType").value;
-
-    const results = document.getElementById("results");
-
-    if (isNaN(totalLength) || isNaN(panelWidth) || panelWidth <= 0 || totalLength <= 0 || (includeGate && isNaN(gateWidth))) {
-      results.innerHTML = '<strong>Please enter valid dimensions.</strong>';
-      results.style.display = "block";
-sendHeight();
-      return;
-    }
-
-    const adjustedLength = totalLength - gateWidth;
-    const panels = Math.ceil(adjustedLength / panelWidth);
-    const posts = panels + 1;
-
-    results.innerHTML = `
-      <div class="result-number">${panels}</div>
-      <div class="result-label">Panels Required</div>
-      <div class="result-number">${posts}</div>
-      <div class="result-label">${postType.charAt(0).toUpperCase() + postType.slice(1)} Posts Required</div>
-      ${includeGate ? `<div class="result-number">1</div><div class="result-label">Gate Included (${gateWidth}m)</div>` : ''}
-    `;
-    results.style.display = "block";
-  }
-function sendHeight() {
-  const height = document.body.scrollHeight;
-  parent.postMessage(height, '*');
-}
-
-window.onload = () => {
-  sendHeight();
-  setTimeout(sendHeight, 500);
-};
-
-window.addEventListener("resize", sendHeight);
-</script>
+  </script>
 </body>
 </html>
