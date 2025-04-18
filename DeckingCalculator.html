@@ -63,7 +63,7 @@
       const standardJoistLength = 3.6; // typical stock length
       const joistsNeeded = Math.ceil(totalJoistLength / standardJoistLength);
 
-      // Screws: 2 per joist crossing, assume 5 joists per board avg
+      // Screws: 2 per joist crossing
       const screwsPerBoard = 2 * joistCount;
       const totalScrews = boardsNeeded * screwsPerBoard;
       const screwBoxSize = 200;
@@ -78,7 +78,19 @@
         <strong>Screw Boxes Needed:</strong> ${screwBoxesNeeded} (approx. ${totalScrews} screws total)<br><br>
         <em>Includes ${wastage}% allowance for cuts and off-cuts. Joist count based on ${joistSpacing}mm centres.</em>
       `;
+
+      // iFrame height adjustment trigger
+      if (window.parent) {
+        window.parent.postMessage({ frameHeight: document.body.scrollHeight }, '*');
+      }
     }
+
+    // Auto height on load
+    window.addEventListener('load', function () {
+      if (window.parent) {
+        window.parent.postMessage({ frameHeight: document.body.scrollHeight }, '*');
+      }
+    });
   </script>
 </body>
 </html>
