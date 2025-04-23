@@ -1,114 +1,260 @@
-/* HTML content unchanged until the script section */
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Timber Span Calculator</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f2f4f7;
+      margin: 0;
+      padding: 20px;
+    }
 
-<script>
-  const spanOptions = {
-    floor: ["2.0", "2.5", "3.0", "3.5", "4.0", "4.5", "5.0", "5.5", "6.0"],
-    ceiling: ["2.0", "2.5", "3.0", "3.5", "4.0", "4.5", "5.0", "5.5", "6.0"],
-    roof: ["2.0", "2.5", "3.0", "3.5", "4.0", "4.5", "5.0", "5.5", "6.0"],
-    deck: ["2.0", "2.5", "3.0", "3.5", "4.0", "4.5", "5.0", "5.5", "6.0"]
-  };
+    .container {
+      max-width: 700px;
+      margin: auto;
+      background: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      border-top: 4px solid #D42F2F;
+    }
 
-  function updateSpanOptions() {
-    const useCase = document.getElementById("useCase").value;
-    const spanSelect = document.getElementById("span");
-    spanSelect.innerHTML = "";
-    spanOptions[useCase].forEach(span => {
-      const opt = document.createElement("option");
-      opt.value = span;
-      opt.textContent = span + " m";
-      spanSelect.appendChild(opt);
-    });
-  }
+    h2 {
+      text-align: center;
+      color: #2c3e50;
+      margin-bottom: 10px;
+    }
 
-  function calculateSpan() {
-    const useCase = document.getElementById("useCase").value;
-    const span = parseFloat(document.getElementById("span").value);
-    const spacing = parseInt(document.getElementById("spacing").value);
-    const grade = document.getElementById("grade").value;
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
 
-    const sizes = {
-      floor: [
-        { max: 2.5, C24: "47 x 150mm", C16: "47 x 175mm" },
-        { max: 3.0, C24: "47 x 200mm", C16: "47 x 225mm" },
-        { max: 3.5, C24: "47 x 225mm", C16: "63 x 250mm" },
-        { max: 4.0, C24: "63 x 250mm", C16: "75 x 250mm" },
-        { max: 4.5, C24: "75 x 250mm", C16: "75 x 275mm" },
-        { max: 5.0, C24: "75 x 275mm", C16: "75 x 300mm" },
-        { max: 5.5, C24: "75 x 300mm", C16: "100 x 300mm" },
-        { max: 6.0, C24: "100 x 300mm", C16: "150 x 300mm" }
-      ],
-      ceiling: [
-        { max: 2.5, C24: "47 x 100mm", C16: "47 x 125mm" },
-        { max: 3.0, C24: "47 x 125mm", C16: "47 x 150mm" },
-        { max: 3.5, C24: "47 x 150mm", C16: "47 x 175mm" },
-        { max: 4.0, C24: "47 x 175mm", C16: "47 x 200mm" },
-        { max: 4.5, C24: "63 x 200mm", C16: "75 x 200mm" },
-        { max: 5.0, C24: "75 x 225mm", C16: "75 x 250mm" },
-        { max: 5.5, C24: "75 x 250mm", C16: "100 x 250mm" },
-        { max: 6.0, C24: "100 x 275mm", C16: "125 x 275mm" }
-      ],
-      roof: [
-        { max: 2.5, C24: "47 x 125mm", C16: "47 x 150mm" },
-        { max: 3.0, C24: "47 x 150mm", C16: "47 x 175mm" },
-        { max: 3.5, C24: "47 x 175mm", C16: "47 x 200mm" },
-        { max: 4.0, C24: "47 x 200mm", C16: "63 x 225mm" },
-        { max: 4.5, C24: "63 x 225mm", C16: "75 x 225mm" },
-        { max: 5.0, C24: "75 x 250mm", C16: "100 x 250mm" },
-        { max: 5.5, C24: "100 x 250mm", C16: "100 x 275mm" },
-        { max: 6.0, C24: "100 x 275mm", C16: "125 x 300mm" }
-      ],
-      deck: [
-        { max: 2.5, C24: "47 x 150mm", C16: "47 x 175mm" },
-        { max: 3.0, C24: "47 x 200mm", C16: "47 x 225mm" },
-        { max: 3.5, C24: "63 x 225mm", C16: "63 x 250mm" },
-        { max: 4.0, C24: "75 x 250mm", C16: "75 x 275mm" },
-        { max: 4.5, C24: "75 x 275mm", C16: "100 x 275mm" },
-        { max: 5.0, C24: "100 x 300mm", C16: "125 x 300mm" },
-        { max: 5.5, C24: "125 x 300mm", C16: "150 x 300mm" },
-        { max: 6.0, C24: "150 x 300mm", C16: "150 x 325mm" }
-      ]
+    .row > div {
+      flex: 1;
+      min-width: 140px;
+    }
+
+    label {
+      font-weight: bold;
+      display: block;
+      margin-top: 8px;
+      margin-bottom: 4px;
+      color: #333;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      box-sizing: border-box;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 15px;
+    }
+
+    button {
+      margin-top: 20px;
+      width: 100%;
+      padding: 12px;
+      background: #D42F2F;
+      color: white;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background: #b52828;
+    }
+
+    .results-box {
+      margin-top: 20px;
+      background: #ffeaea;
+      padding: 20px;
+      border-radius: 8px;
+      font-size: 16px;
+      color: #222;
+      border-left: 4px solid #D42F2F;
+    }
+
+    .footnote {
+      font-size: 13px;
+      color: #666;
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    .section {
+      margin-bottom: 30px;
+      background: #f9fafc;
+      padding: 15px 20px;
+      border-radius: 10px;
+      border: 1px solid #e0e6ed;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Timber Span Calculator</h2>
+
+    <div class="section">
+      <div class="row">
+        <div>
+          <label for="useCase">Timber Use Case</label>
+          <select id="useCase" onchange="updateSpanOptions()">
+            <option value="floor">Floor Joist</option>
+            <option value="ceiling">Ceiling Joist</option>
+            <option value="roof">Roof Rafter</option>
+            <option value="deck">Deck Joist</option>
+          </select>
+        </div>
+        <div>
+          <label for="span">Span Length (m)</label>
+          <select id="span"></select>
+        </div>
+      </div>
+
+      <div class="row">
+        <div>
+          <label for="spacing">Timber Spacing (mm)</label>
+          <select id="spacing">
+            <option value="400">400mm</option>
+            <option value="600">600mm</option>
+          </select>
+        </div>
+        <div>
+          <label for="grade">Timber Grade</label>
+          <select id="grade">
+            <option value="C24">C24</option>
+            <option value="C16">C16</option>
+          </select>
+        </div>
+      </div>
+
+      <button onclick="calculateSpan()">Calculate</button>
+      <div id="result" class="results-box" style="display: none;"></div>
+    </div>
+
+    <div class="footnote">
+      This is an estimation only based on typical UK span tables and does not account for specific site conditions. Always consult Building Control or a structural engineer for confirmation.
+    </div>
+  </div>
+
+  <script>
+    const spanOptions = {
+      floor: ["2.0", "2.5", "3.0", "3.5", "4.0", "4.5", "5.0", "5.5", "6.0"],
+      ceiling: ["2.0", "2.5", "3.0", "3.5", "4.0", "4.5", "5.0", "5.5", "6.0"],
+      roof: ["2.0", "2.5", "3.0", "3.5", "4.0", "4.5", "5.0", "5.5", "6.0"],
+      deck: ["2.0", "2.5", "3.0", "3.5", "4.0", "4.5", "5.0", "5.5", "6.0"]
     };
 
-    const useCaseText = {
-      floor: "Floor Joist",
-      ceiling: "Ceiling Joist",
-      roof: "Roof Rafter",
-      deck: "Deck Joist"
-    };
+    function updateSpanOptions() {
+      const useCase = document.getElementById("useCase").value;
+      const spanSelect = document.getElementById("span");
+      spanSelect.innerHTML = "";
+      spanOptions[useCase].forEach(span => {
+        const opt = document.createElement("option");
+        opt.value = span;
+        opt.textContent = span + " m";
+        spanSelect.appendChild(opt);
+      });
+    }
 
-    const resultDiv = document.getElementById("result");
+    function calculateSpan() {
+      const useCase = document.getElementById("useCase").value;
+      const span = parseFloat(document.getElementById("span").value);
+      const spacing = parseInt(document.getElementById("spacing").value);
+      const grade = document.getElementById("grade").value;
 
-    let size = "not available for this span.";
-    let warning = "";
+      const sizes = {
+        floor: [
+          { max: 2.5, C24: "47 x 150mm", C16: "47 x 175mm" },
+          { max: 3.0, C24: "47 x 200mm", C16: "47 x 225mm" },
+          { max: 3.5, C24: "47 x 225mm", C16: "63 x 250mm" },
+          { max: 4.0, C24: "63 x 250mm", C16: "75 x 250mm" },
+          { max: 4.5, C24: "75 x 250mm", C16: "75 x 275mm" },
+          { max: 5.0, C24: "75 x 275mm", C16: "75 x 300mm" },
+          { max: 5.5, C24: "75 x 300mm", C16: "100 x 300mm" },
+          { max: 6.0, C24: "100 x 300mm", C16: "150 x 300mm" }
+        ],
+        ceiling: [
+          { max: 2.5, C24: "47 x 100mm", C16: "47 x 125mm" },
+          { max: 3.0, C24: "47 x 125mm", C16: "47 x 150mm" },
+          { max: 3.5, C24: "47 x 150mm", C16: "47 x 175mm" },
+          { max: 4.0, C24: "47 x 175mm", C16: "47 x 200mm" },
+          { max: 4.5, C24: "63 x 200mm", C16: "75 x 200mm" },
+          { max: 5.0, C24: "75 x 225mm", C16: "75 x 250mm" },
+          { max: 5.5, C24: "75 x 250mm", C16: "100 x 250mm" },
+          { max: 6.0, C24: "100 x 275mm", C16: "125 x 275mm" }
+        ],
+        roof: [
+          { max: 2.5, C24: "47 x 125mm", C16: "47 x 150mm" },
+          { max: 3.0, C24: "47 x 150mm", C16: "47 x 175mm" },
+          { max: 3.5, C24: "47 x 175mm", C16: "47 x 200mm" },
+          { max: 4.0, C24: "47 x 200mm", C16: "63 x 225mm" },
+          { max: 4.5, C24: "63 x 225mm", C16: "75 x 225mm" },
+          { max: 5.0, C24: "75 x 250mm", C16: "100 x 250mm" },
+          { max: 5.5, C24: "100 x 250mm", C16: "100 x 275mm" },
+          { max: 6.0, C24: "100 x 275mm", C16: "125 x 300mm" }
+        ],
+        deck: [
+          { max: 2.5, C24: "47 x 150mm", C16: "47 x 175mm" },
+          { max: 3.0, C24: "47 x 200mm", C16: "47 x 225mm" },
+          { max: 3.5, C24: "63 x 225mm", C16: "63 x 250mm" },
+          { max: 4.0, C24: "75 x 250mm", C16: "75 x 275mm" },
+          { max: 4.5, C24: "75 x 275mm", C16: "100 x 275mm" },
+          { max: 5.0, C24: "100 x 300mm", C16: "125 x 300mm" },
+          { max: 5.5, C24: "125 x 300mm", C16: "150 x 300mm" },
+          { max: 6.0, C24: "150 x 300mm", C16: "150 x 325mm" }
+        ]
+      };
 
-    for (const rec of sizes[useCase]) {
-      if (span <= rec.max) {
-        size = rec[grade];
-        if (rec.max > 4.0) {
-          warning = "<br><em>Note: This span may require structural approval. Always verify with a qualified engineer.</em>";
+      const useCaseText = {
+        floor: "Floor Joist",
+        ceiling: "Ceiling Joist",
+        roof: "Roof Rafter",
+        deck: "Deck Joist"
+      };
+
+      const recommendations = sizes[useCase];
+      let size = "not available for this span.";
+      let warning = "";
+
+      for (const rec of recommendations) {
+        if (span <= rec.max) {
+          size = rec[grade];
+          if (rec.max > 4.0) {
+            warning = "<br><em>Note: This span may require structural approval. Always verify with a qualified engineer.</em>";
+          }
+          break;
         }
-        break;
+      }
+
+      const resultDiv = document.getElementById("result");
+      resultDiv.style.display = "block";
+      resultDiv.innerHTML = `
+        <div><strong>Recommended Timber Size:</strong> ${size}</div>
+        <div>Use Case: <strong>${useCaseText[useCase]}</strong></div>
+        <div>Span: <strong>${span.toFixed(1)}m</strong></div>
+        <div>Spacing: <strong>${spacing}mm</strong></div>
+        <div>Grade: <strong>${grade}</strong></div>
+        ${warning}
+      `;
+
+      if (window.parent) {
+        setTimeout(() => {
+          window.parent.postMessage({ frameHeight: document.body.scrollHeight }, "*");
+        }, 100);
       }
     }
 
-    resultDiv.style.display = "block";
-    resultDiv.innerHTML = `
-      <div><strong>Recommended Timber Size:</strong> ${size}</div>
-      <div>Use Case: <strong>${useCaseText[useCase]}</strong></div>
-      <div>Span: <strong>${span.toFixed(1)}m</strong></div>
-      <div>Spacing: <strong>${spacing}mm</strong></div>
-      <div>Grade: <strong>${grade}</strong></div>
-      ${warning}
-    `;
-
-    if (window.parent) {
-      setTimeout(() => {
-        window.parent.postMessage({ frameHeight: document.body.scrollHeight }, "*");
-      }, 100);
-    }
-  }
-
-  window.onload = updateSpanOptions;
-</script>
+    window.onload = updateSpanOptions;
+  </script>
 </body>
 </html>
