@@ -186,6 +186,7 @@
     const adjustedLength = totalLength - gateWidth;
     const panels = Math.ceil(adjustedLength / panelWidth);
     const posts = panels + 1;
+    const cementBags = posts; // Assuming 1 bag per post (can be adjusted based on depth)
 
     results.innerHTML = `
       <div class="result-number">${panels}</div>
@@ -193,6 +194,8 @@
       <div class="result-number">${posts}</div>
       <div class="result-label">${postType.charAt(0).toUpperCase() + postType.slice(1)} Posts Required</div>
       ${includeGate ? `<div class="result-number">1</div><div class="result-label">Gate Included (${gateWidth * 1000}mm)</div>` : ''}
+      <div class="result-number">${cementBags}</div>
+      <div class="result-label">Bags of Cement (1 per post, may vary based on depth)</div>
     `;
     results.style.display = "block";
     sendHeight();
