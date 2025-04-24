@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>U-Value Calculator</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f2f4f7;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 700px;
+      margin: auto;
+      background: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      border-top: 4px solid #D42F2F;
+    }
+    h2 {
+      text-align: center;
+      color: #2c3e50;
+      margin-bottom: 20px;
+    }
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-bottom: 15px;
+    }
+    .row > div {
+      flex: 1;
+      min-width: 140px;
+    }
+    label {
+      font-weight: bold;
+      display: block;
+      margin-bottom: 5px;
+      color: #333;
+    }
+    input, select {
+      width: 100%;
+      padding: 10px;
+      box-sizing: border-box;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 15px;
+    }
+    button {
+      margin-top: 20px;
+      width: 100%;
+      padding: 12px;
+      background: #D42F2F;
+      color: white;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    button:hover {
+      background: #b52828;
+    }
+    .results-box {
+      margin-top: 20px;
+      background: #ffeaea;
+      padding: 20px;
+      border-radius: 8px;
+      font-size: 16px;
+      color: #222;
+      border-left: 4px solid #D42F2F;
+      text-align: center;
+    }
+    .result-number {
+      font-size: 32px;
+      font-weight: bold;
+      color: #D42F2F;
+      line-height: 1.2;
+    }
+    .result-label {
+      font-size: 14px;
+      color: #555;
+      margin-top: 5px;
+    }
+    .footnote {
+      font-size: 13px;
+      color: #666;
+      margin-top: 20px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h2>U-Value Calculator</h2>
+
+  <div class="row">
+    <div>
+      <label for="wallType">Wall/Window/Roof Type</label>
+      <select id="wallType">
+        <option value="wall">Wall</option>
+        <option value="window">Window</option>
+        <option value="roof">Roof</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="row">
+    <div>
+      <label for="material1">Material 1 (Thickness in mm)</label>
+      <input type="number" id="material1" step="1">
+    </div>
+    <div>
+      <label for="lambda1">Lambda (λ) for Material 1</label>
+      <input type="number" id="lambda1" step="0.01">
+    </div>
+  </div>
+
+  <div class="row">
+    <div>
+      <label for="material2">Material 2 (Thickness in mm)</label>
+      <input type="number" id="material2" step="1">
+    </div>
+    <div>
+      <label for="lambda2">Lambda (λ) for Material 2</label>
+      <input type="number" id="lambda2" step="0.01">
+    </div>
+  </div>
+
+  <div class="row">
+    <div>
+      <label for="area">Area (m²)</label>
+      <input type="number" id="area" step="0.01">
+    </div>
+    <div>
+      <label for="deltaT">Temperature Difference (ΔT, °C)</label>
+      <input type="number" id="deltaT" step="0.1" value="20">
+    </div>
+  </div>
+
+  <button onclick="calculateUValue()">Calculate U-Value</button>
+
+  <div id="results" class="results-box" style="display: none;"></div>
+
+  <div class="footnote">
+    U-Value and heat loss are estimations. Cement estimates depend on post depth.
+  </div>
+</div>
+
+<script>
+  function calculateUValue() {
+    const material1Thickness = parseFloat(document.getElementById("material1").value) / 1000;  // in meters
+    const lambda1 = parseFloat(document.getElementById("lambda1").value);
+    const material2Thickness = parseFloat(document.getElementById("material2").value) / 1000;  // in meters
+    const lambda2 = parseFloat(document.getElementById("lambda2").value);
+    const area = parseFloat(document.getElementById("area").value);
+    const deltaT = parseFloat(document.getElementById("deltaT").value);
+    const results = document.getElementById("results");
+
+    if (isNaN(material1Thickness) || isNaN(lambda1) || isNaN(material2Thickness) || isNaN(lambda2) || isNaN(area) || material1Thickness <= 0 || lambda1 <= 0 || material2Thickness <= 0 || lambda2 <= 0 || area <= 0) {
+      results.innerHTML = '<strong>Please enter valid dimensions and values.</strong>';
+      results.style.display = "block";
+      return;
+    }
+
+    const resistance1 = material1Thickness / lambda1;
+    const resistance2 = material2Thickness / lambda2;
+    const totalResistance = resistance1 + resistance2;
+    const uValue = 1 / totalResistance;
+    const heatLoss = uValue * area * deltaT;  // in watts
+
+    results.innerHTML = `
+      <div class="result-number">${uValue.toFixed(3)}</div>
+      <div class="result-label">U-Value (W/m²·K)</div>
+      <div class="result-number">${heatLoss.toFixed(2)}</div>
+      <div class="result-label">Heat Loss (W)</div>
+      <div class="result-number">${Math.ceil(area * 1)}</div>
+      <div class="result-label">Bags of Cement (based on 1 per post)</div>
+    `;
+    results.style.display = "block";
+    sendHeight();
+  }
+
+  function sendHeight() {
+    const height = document.body.scrollHeight;
+    parent.postMessage(height, '*');
+  }
+
+  window.onload = () => {
+    sendHeight();
+    setTimeout(sendHeight, 500);
+  };
+
+  window.addEventListener("resize", sendHeight);
+</script>
+</body>
+</html>
